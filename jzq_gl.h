@@ -27,7 +27,7 @@ public:
   GLTexture& setBaseLevel(GLint param);
   GLTexture& setMaxLevel(GLint param);
   GLTexture& setLodBias(GLfloat param);
-  GLTexture& setGenerateMipmap(GLboolean param);
+  GLTexture& generateMipmap();
   GLuint id();
 
 protected:
@@ -183,7 +183,13 @@ template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTex
 template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTexture>::setBaseLevel(GLint param) { return setParameter(GL_TEXTURE_BASE_LEVEL,param); }
 template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTexture>::setMaxLevel(GLint param) { return setParameter(GL_TEXTURE_MAX_LEVEL,param); }
 template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTexture>::setLodBias(GLfloat param) { return setParameter(GL_TEXTURE_LOD_BIAS,param); }
-template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTexture>::setGenerateMipmap(GLboolean param) { return setParameter(GL_GENERATE_MIPMAP,param); }
+
+template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTexture>::generateMipmap()
+{
+  bind();
+  glGenerateMipMap(TARGET);
+  return static_cast<GLTexture&>(*this);
+}
 
 //GLTexture1D::GLTexture1D() : GLTextureBase<GL_TEXTURE_1D>() {}
 //GLTexture1D::GLTexture1D(const GLTextureBase<GL_TEXTURE_1D>& t) : GLTextureBase<GL_TEXTURE_1D>(t) {}

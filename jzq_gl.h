@@ -7,6 +7,7 @@
 
 #include "jzq.h"
 
+// * srgb handling
 // * pack alignment
 // * auto mip?
 
@@ -133,7 +134,6 @@ GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(const GLTexture& t)
 template<GLenum TARGET,typename GLTexture>
 GLTextureBase<TARGET,GLTexture>::~GLTextureBase()
 {
-  //printf("dtor\n");
   destroy(texture,refCount);
 }
 

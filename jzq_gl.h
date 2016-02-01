@@ -208,7 +208,7 @@ GLenum GLTextureBase<TARGET,GLTexture>::formatFor(GLint internalFormat)
     case GL_RG8:                return GL_RG;
     case GL_RGB8:               return GL_RGB;
     case GL_RGBA8:              return GL_RGBA;
-
+    
     case GL_R32I:               return GL_RED;
     case GL_RG32I:              return GL_RG;
     case GL_RGB32I:             return GL_RGB;
@@ -218,6 +218,9 @@ GLenum GLTextureBase<TARGET,GLTexture>::formatFor(GLint internalFormat)
     case GL_RG32F:              return GL_RG;
     case GL_RGB32F:             return GL_RGB;
     case GL_RGBA32F:            return GL_RGBA;
+
+    case GL_SRGB8:              return GL_RGB;
+    case GL_SRGB8_ALPHA8:       return GL_RGBA;
 
     case GL_DEPTH_COMPONENT16:  return GL_DEPTH_COMPONENT;
     case GL_DEPTH_COMPONENT24:  return GL_DEPTH_COMPONENT;
@@ -247,6 +250,9 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
     case GL_RG32F:              return GL_FLOAT;        
     case GL_RGB32F:             return GL_FLOAT;        
     case GL_RGBA32F:            return GL_FLOAT;
+
+    case GL_SRGB8:              return GL_UNSIGNED_BYTE;
+    case GL_SRGB8_ALPHA8:       return GL_UNSIGNED_BYTE;
 
     case GL_DEPTH_COMPONENT16:  return GL_UNSIGNED_INT;
     case GL_DEPTH_COMPONENT24:  return GL_UNSIGNED_INT;

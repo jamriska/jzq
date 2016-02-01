@@ -204,20 +204,25 @@ GLenum GLTextureBase<TARGET,GLTexture>::formatFor(GLint internalFormat)
 {
   switch(internalFormat)
   {
-    case GL_R8:      return GL_RED;
-    case GL_RG8:     return GL_RG;
-    case GL_RGB8:    return GL_RGB;
-    case GL_RGBA8:   return GL_RGBA;
+    case GL_R8:                 return GL_RED;
+    case GL_RG8:                return GL_RG;
+    case GL_RGB8:               return GL_RGB;
+    case GL_RGBA8:              return GL_RGBA;
 
-    case GL_R32I:    return GL_RED;
-    case GL_RG32I:   return GL_RG;
-    case GL_RGB32I:  return GL_RGB;
-    case GL_RGBA32I: return GL_RGBA;
+    case GL_R32I:               return GL_RED;
+    case GL_RG32I:              return GL_RG;
+    case GL_RGB32I:             return GL_RGB;
+    case GL_RGBA32I:            return GL_RGBA;
 
-    case GL_R32F:    return GL_RED;
-    case GL_RG32F:   return GL_RG;
-    case GL_RGB32F:  return GL_RGB;
-    case GL_RGBA32F: return GL_RGBA;
+    case GL_R32F:               return GL_RED;
+    case GL_RG32F:              return GL_RG;
+    case GL_RGB32F:             return GL_RGB;
+    case GL_RGBA32F:            return GL_RGBA;
+
+    case GL_DEPTH_COMPONENT16:  return GL_DEPTH_COMPONENT;
+    case GL_DEPTH_COMPONENT24:  return GL_DEPTH_COMPONENT;
+    case GL_DEPTH_COMPONENT32:  return GL_DEPTH_COMPONENT;
+    case GL_DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT;
   }
 
   return GL_INVALID_VALUE;
@@ -228,20 +233,25 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
 {
   switch(internalFormat)
   {
-    case GL_R8:      return GL_UNSIGNED_BYTE;
-    case GL_RG8:     return GL_UNSIGNED_BYTE;
-    case GL_RGB8:    return GL_UNSIGNED_BYTE;
-    case GL_RGBA8:   return GL_UNSIGNED_BYTE;
+    case GL_R8:                 return GL_UNSIGNED_BYTE;
+    case GL_RG8:                return GL_UNSIGNED_BYTE;
+    case GL_RGB8:               return GL_UNSIGNED_BYTE;
+    case GL_RGBA8:              return GL_UNSIGNED_BYTE;
     
-    case GL_R32I:    return GL_INT;          
-    case GL_RG32I:   return GL_INT;          
-    case GL_RGB32I:  return GL_INT;          
-    case GL_RGBA32I: return GL_INT;          
+    case GL_R32I:               return GL_INT;          
+    case GL_RG32I:              return GL_INT;          
+    case GL_RGB32I:             return GL_INT;          
+    case GL_RGBA32I:            return GL_INT;          
     
-    case GL_R32F:    return GL_FLOAT;        
-    case GL_RG32F:   return GL_FLOAT;        
-    case GL_RGB32F:  return GL_FLOAT;        
-    case GL_RGBA32F: return GL_FLOAT;        
+    case GL_R32F:               return GL_FLOAT;        
+    case GL_RG32F:              return GL_FLOAT;        
+    case GL_RGB32F:             return GL_FLOAT;        
+    case GL_RGBA32F:            return GL_FLOAT;
+
+    case GL_DEPTH_COMPONENT16:  return GL_UNSIGNED_INT;
+    case GL_DEPTH_COMPONENT24:  return GL_UNSIGNED_INT;
+    case GL_DEPTH_COMPONENT32:  return GL_UNSIGNED_INT;
+    case GL_DEPTH_COMPONENT32F: return GL_FLOAT;
   }
 
   return GL_INVALID_VALUE;

@@ -34,6 +34,9 @@ protected:
   GLTextureBase();
   GLTextureBase(const GLTexture& t);
   ~GLTextureBase();
+ 
+  static GLenum formatFor(GLint internalFormat);
+  static GLenum typeFor(GLint internalFormat);
 
 private:
   GLuint texture;
@@ -57,8 +60,10 @@ class GLTexture2D : public GLTextureBase<GL_TEXTURE_2D,GLTexture2D>
 public:
   GLTexture2D();
   GLTexture2D(const GLTexture2D& t);
-  //GLTexture2D(GLint internalFormat,int width,int height);
-  //GLTexture2D(GLint internalFormat,int width,int height,void* data);
+  
+  GLTexture2D(GLint internalFormat,int width,int height);
+  GLTexture2D(GLint internalFormat,int width,int height,void* data);
+  
   template<typename T> GLTexture2D(const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,const Array2<T>& image);
   
@@ -66,6 +71,9 @@ public:
 
   GLTexture2D& setWrap(GLint wrapST);
   GLTexture2D& setWrap(GLint wrapS,GLint wrapT);
+
+private:
+  void init(GLint internalFormat,int width,int height,void* data);
 };
 
 /*
@@ -191,62 +199,106 @@ template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTex
   return static_cast<GLTexture&>(*this);
 }
 
+template<GLenum TARGET,typename GLTexture>
+GLenum GLTextureBase<TARGET,GLTexture>::formatFor(GLint internalFormat)
+{
+  switch(internalFormat)
+  {
+    case GL_R8:      return GL_RED;
+    case GL_RG8:     return GL_RG;
+    case GL_RGB8:    return GL_RGB;
+    case GL_RGBA8:   return GL_RGBA;
+
+    case GL_R32I:    return GL_RED;
+    case GL_RG32I:   return GL_RG;
+    case GL_RGB32I:  return GL_RGB;
+    case GL_RGBA32I: return GL_RGBA;
+
+    case GL_R32F:    return GL_RED;
+    case GL_RG32F:   return GL_RG;
+    case GL_RGB32F:  return GL_RGB;
+    case GL_RGBA32F: return GL_RGBA;
+  }
+
+  return GL_INVALID_VALUE;
+}
+
+template<GLenum TARGET,typename GLTexture>
+GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
+{
+  switch(internalFormat)
+  {
+    case GL_R8:      return GL_UNSIGNED_BYTE;
+    case GL_RG8:     return GL_UNSIGNED_BYTE;
+    case GL_RGB8:    return GL_UNSIGNED_BYTE;
+    case GL_RGBA8:   return GL_UNSIGNED_BYTE;
+    
+    case GL_R32I:    return GL_INT;          
+    case GL_RG32I:   return GL_INT;          
+    case GL_RGB32I:  return GL_INT;          
+    case GL_RGBA32I: return GL_INT;          
+    
+    case GL_R32F:    return GL_FLOAT;        
+    case GL_RG32F:   return GL_FLOAT;        
+    case GL_RGB32F:  return GL_FLOAT;        
+    case GL_RGBA32F: return GL_FLOAT;        
+  }
+
+  return GL_INVALID_VALUE;
+}
+
+template<typename T>
+struct GLInternalFormatFor {  };
+
+template<> struct GLInternalFormatFor<unsigned char> { static const GLint value = GL_R8;      };
+template<> struct GLInternalFormatFor<Vec2uc>        { static const GLint value = GL_RG8;     };
+template<> struct GLInternalFormatFor<Vec3uc>        { static const GLint value = GL_RGB8;    };
+template<> struct GLInternalFormatFor<Vec4uc>        { static const GLint value = GL_RGBA8;   };
+
+template<> struct GLInternalFormatFor<int>           { static const GLint value = GL_R32I;    };
+template<> struct GLInternalFormatFor<Vec2i>         { static const GLint value = GL_RG32I;   };
+template<> struct GLInternalFormatFor<Vec3i>         { static const GLint value = GL_RGB32I;  };
+template<> struct GLInternalFormatFor<Vec4i>         { static const GLint value = GL_RGBA32I; };
+
+template<> struct GLInternalFormatFor<float>         { static const GLint value = GL_R32F;    };
+template<> struct GLInternalFormatFor<Vec2f>         { static const GLint value = GL_RG32F;   };
+template<> struct GLInternalFormatFor<Vec3f>         { static const GLint value = GL_RGB32F;  };
+template<> struct GLInternalFormatFor<Vec4f>         { static const GLint value = GL_RGBA32F; };
+
 //GLTexture1D::GLTexture1D() : GLTextureBase<GL_TEXTURE_1D>() {}
 //GLTexture1D::GLTexture1D(const GLTextureBase<GL_TEXTURE_1D>& t) : GLTextureBase<GL_TEXTURE_1D>(t) {}
 
 GLTexture2D::GLTexture2D() : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>() {}
 GLTexture2D::GLTexture2D(const GLTexture2D& t) : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>(t) {}
 
-// XXX how to hide this?
-template<typename T>
-struct GLFormat { };
-
-template<> struct GLFormat<unsigned char> { static const GLint internalFormat = GL_R8;      static const GLenum format = GL_RED;  static const GLenum type = GL_UNSIGNED_BYTE; };
-template<> struct GLFormat<Vec2uc>        { static const GLint internalFormat = GL_RG8;     static const GLenum format = GL_RG;   static const GLenum type = GL_UNSIGNED_BYTE; };
-template<> struct GLFormat<Vec3uc>        { static const GLint internalFormat = GL_RGB8;    static const GLenum format = GL_RGB;  static const GLenum type = GL_UNSIGNED_BYTE; };
-template<> struct GLFormat<Vec4uc>        { static const GLint internalFormat = GL_RGBA8;   static const GLenum format = GL_RGBA; static const GLenum type = GL_UNSIGNED_BYTE; };
-
-template<> struct GLFormat<int>           { static const GLint internalFormat = GL_R32I;    static const GLenum format = GL_RED;  static const GLenum type = GL_INT;           };
-template<> struct GLFormat<Vec2i>         { static const GLint internalFormat = GL_RG32I;   static const GLenum format = GL_RG;   static const GLenum type = GL_INT;           };
-template<> struct GLFormat<Vec3i>         { static const GLint internalFormat = GL_RGB32I;  static const GLenum format = GL_RGB;  static const GLenum type = GL_INT;           };
-template<> struct GLFormat<Vec4i>         { static const GLint internalFormat = GL_RGBA32I; static const GLenum format = GL_RGBA; static const GLenum type = GL_INT;           };
-
-template<> struct GLFormat<float>         { static const GLint internalFormat = GL_R32F;    static const GLenum format = GL_RED;  static const GLenum type = GL_FLOAT;         };
-template<> struct GLFormat<Vec2f>         { static const GLint internalFormat = GL_RG32F;   static const GLenum format = GL_RG;   static const GLenum type = GL_FLOAT;         };
-template<> struct GLFormat<Vec3f>         { static const GLint internalFormat = GL_RGB32F;  static const GLenum format = GL_RGB;  static const GLenum type = GL_FLOAT;         };
-template<> struct GLFormat<Vec4f>         { static const GLint internalFormat = GL_RGBA32F; static const GLenum format = GL_RGBA; static const GLenum type = GL_FLOAT;         };
-
-/*
-GLTexture2D::GLTexture2D(GLint format,int width,int height)
+void GLTexture2D::init(GLint internalFormat,int width,int height,void* data)
 {
-  bind();
-
-  // figure out how to derive compatible format for src
-  //glTexImage2D(GL_TEXTURE_2D,0,format,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,0);
-  
-  setWrapS(GL_CLAMP_TO_EDGE);
-  setWrapT(GL_CLAMP_TO_EDGE);
+  setTexImage(internalFormat,width,height,formatFor(internalFormat),typeFor(internalFormat),data);
+  setWrap(GL_CLAMP_TO_EDGE);
   setMinFilter(GL_NEAREST);
-  setMagFilter(GL_NEAREST);  
+  setMagFilter(GL_NEAREST);
 }
-*/
+
+GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height)
+{
+  init(internalFormat,width,height,0);
+}
+
+GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,void* data)
+{
+  init(internalFormat,width,height,data);
+}
 
 template<typename T>
 GLTexture2D::GLTexture2D(const Array2<T>& image)
 {
-  setTexImage(GLFormat<T>::internalFormat,image.width(),image.height(),GLFormat<T>::format,GLFormat<T>::type,(void*)image.data());
-  setWrap(GL_CLAMP_TO_EDGE);
-  setMinFilter(GL_NEAREST);
-  setMagFilter(GL_NEAREST);
+  init(GLInternalFormatFor<T>::value,image.width(),image.height(),(void*)image.data());
 }
 
 template<typename T>
 GLTexture2D::GLTexture2D(GLint internalFormat,const Array2<T>& image)
 {
-  setTexImage(internalFormat,image.width(),image.height(),GLFormat<T>::format,GLFormat<T>::type,(void*)image.data());
-  setWrap(GL_CLAMP_TO_EDGE);
-  setMinFilter(GL_NEAREST);
-  setMagFilter(GL_NEAREST);
+  init(internalFormat,image.width(),image.height(),(void*)image.data());
 }
 
 void GLTexture2D::setTexImage(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)

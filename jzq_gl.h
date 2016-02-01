@@ -370,6 +370,7 @@ GLTexture2D::GLTexture2D(GLint internalFormat,const Array2<T>& image)
 void GLTexture2D::setTexImage(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
 {
   bind();
+  glPixelStorei(GL_UNPACK_ALIGNMENT,1);
   glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,data);
 }
 

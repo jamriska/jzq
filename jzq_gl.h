@@ -286,19 +286,19 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
     case GL_RGB16UI:            return GL_UNSIGNED_SHORT;
     case GL_RGBA16UI:           return GL_UNSIGNED_SHORT;
 
-    case GL_R32I:               return GL_INT;          
-    case GL_RG32I:              return GL_INT;          
-    case GL_RGB32I:             return GL_INT;          
-    case GL_RGBA32I:            return GL_INT;          
+    case GL_R32I:               return GL_INT;
+    case GL_RG32I:              return GL_INT;
+    case GL_RGB32I:             return GL_INT;
+    case GL_RGBA32I:            return GL_INT;
 
     case GL_R32UI:              return GL_UNSIGNED_INT;
     case GL_RG32UI:             return GL_UNSIGNED_INT;
     case GL_RGB32UI:            return GL_UNSIGNED_INT;
     case GL_RGBA32UI:           return GL_UNSIGNED_INT;
     
-    case GL_R32F:               return GL_FLOAT;        
-    case GL_RG32F:              return GL_FLOAT;        
-    case GL_RGB32F:             return GL_FLOAT;        
+    case GL_R32F:               return GL_FLOAT;
+    case GL_RG32F:              return GL_FLOAT;
+    case GL_RGB32F:             return GL_FLOAT;
     case GL_RGBA32F:            return GL_FLOAT;
 
     case GL_SRGB8:              return GL_UNSIGNED_BYTE;
@@ -314,7 +314,7 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
 }
 
 template<typename T>
-struct GLInternalFormatFor {  };
+struct GLInternalFormatFor { };
 
 template<> struct GLInternalFormatFor<unsigned char> { static const GLint value = GL_R8;      };
 template<> struct GLInternalFormatFor<Vec2uc>        { static const GLint value = GL_RG8;     };

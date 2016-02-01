@@ -208,11 +208,36 @@ GLenum GLTextureBase<TARGET,GLTexture>::formatFor(GLint internalFormat)
     case GL_RG8:                return GL_RG;
     case GL_RGB8:               return GL_RGB;
     case GL_RGBA8:              return GL_RGBA;
+
+    case GL_R8I:                return GL_RED;
+    case GL_RG8I:               return GL_RG;
+    case GL_RGB8I:              return GL_RGB;
+    case GL_RGBA8I:             return GL_RGBA;
+
+    case GL_R8UI:               return GL_RED;
+    case GL_RG8UI:              return GL_RG;
+    case GL_RGB8UI:             return GL_RGB;
+    case GL_RGBA8UI:            return GL_RGBA;
+
+    case GL_R16I:               return GL_RED;
+    case GL_RG16I:              return GL_RG;
+    case GL_RGB16I:             return GL_RGB;
+    case GL_RGBA16I:            return GL_RGBA;
+
+    case GL_R16UI:              return GL_RED;
+    case GL_RG16UI:             return GL_RG;
+    case GL_RGB16UI:            return GL_RGB;
+    case GL_RGBA16UI:           return GL_RGBA;
     
     case GL_R32I:               return GL_RED;
     case GL_RG32I:              return GL_RG;
     case GL_RGB32I:             return GL_RGB;
     case GL_RGBA32I:            return GL_RGBA;
+
+    case GL_R32UI:              return GL_RED;
+    case GL_RG32UI:             return GL_RG;
+    case GL_RGB32UI:            return GL_RGB;
+    case GL_RGBA32UI:           return GL_RGBA;
 
     case GL_R32F:               return GL_RED;
     case GL_RG32F:              return GL_RG;
@@ -241,10 +266,35 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
     case GL_RGB8:               return GL_UNSIGNED_BYTE;
     case GL_RGBA8:              return GL_UNSIGNED_BYTE;
     
+    case GL_R8I:                return GL_BYTE;
+    case GL_RG8I:               return GL_BYTE;
+    case GL_RGB8I:              return GL_BYTE;
+    case GL_RGBA8I:             return GL_BYTE;
+
+    case GL_R8UI:               return GL_UNSIGNED_BYTE;
+    case GL_RG8UI:              return GL_UNSIGNED_BYTE;
+    case GL_RGB8UI:             return GL_UNSIGNED_BYTE;
+    case GL_RGBA8UI:            return GL_UNSIGNED_BYTE;
+
+    case GL_R16I:               return GL_SHORT;
+    case GL_RG16I:              return GL_SHORT;
+    case GL_RGB16I:             return GL_SHORT;
+    case GL_RGBA16I:            return GL_SHORT;
+
+    case GL_R16UI:              return GL_UNSIGNED_SHORT;
+    case GL_RG16UI:             return GL_UNSIGNED_SHORT;
+    case GL_RGB16UI:            return GL_UNSIGNED_SHORT;
+    case GL_RGBA16UI:           return GL_UNSIGNED_SHORT;
+
     case GL_R32I:               return GL_INT;          
     case GL_RG32I:              return GL_INT;          
     case GL_RGB32I:             return GL_INT;          
     case GL_RGBA32I:            return GL_INT;          
+
+    case GL_R32UI:              return GL_UNSIGNED_INT;
+    case GL_RG32UI:             return GL_UNSIGNED_INT;
+    case GL_RGB32UI:            return GL_UNSIGNED_INT;
+    case GL_RGBA32UI:           return GL_UNSIGNED_INT;
     
     case GL_R32F:               return GL_FLOAT;        
     case GL_RG32F:              return GL_FLOAT;        

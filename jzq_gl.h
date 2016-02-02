@@ -362,7 +362,7 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
     case GL_SRGB8:              return GL_UNSIGNED_BYTE;
     case GL_SRGB8_ALPHA8:       return GL_UNSIGNED_BYTE;
 
-    case GL_DEPTH_COMPONENT16:  return GL_UNSIGNED_INT;
+    case GL_DEPTH_COMPONENT16:  return GL_UNSIGNED_SHORT;
     case GL_DEPTH_COMPONENT24:  return GL_UNSIGNED_INT;
     case GL_DEPTH_COMPONENT32:  return GL_UNSIGNED_INT;
     case GL_DEPTH_COMPONENT32F: return GL_FLOAT;

@@ -373,6 +373,13 @@ GLTexture2D::GLTexture2D(const GLTexture2D& t) : GLTextureBase<GL_TEXTURE_2D,GLT
 void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
 {
   bind();
+  glPixelStorei(GL_UNPACK_SWAP_BYTES,GL_FALSE);
+  glPixelStorei(GL_UNPACK_LSB_FIRST,GL_FALSE);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
+  glPixelStorei(GL_UNPACK_IMAGE_HEIGHT,0);
+  glPixelStorei(GL_UNPACK_SKIP_ROWS,0);
+  glPixelStorei(GL_UNPACK_SKIP_PIXELS,0);
+  glPixelStorei(GL_UNPACK_SKIP_IMAGES,0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,1);
   glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,data);
   setWrap(GL_CLAMP_TO_EDGE);

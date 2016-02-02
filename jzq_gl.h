@@ -29,11 +29,16 @@ public:
   GLTexture& setLodBias(GLfloat param);
   GLTexture& generateMipmap();
   GLuint id();
+ 
+  GLint internalFormat(GLint level=0);
 
 protected:
   GLTextureBase();
   GLTextureBase(const GLTexture& t);
   ~GLTextureBase();
+
+  GLint   getTexLevelParameteri(GLint level,GLenum pname);
+  GLfloat getTexLevelParameterf(GLint level,GLenum pname);
  
   static GLenum formatFor(GLint internalFormat);
   static GLenum typeFor(GLint internalFormat);
@@ -69,6 +74,9 @@ public:
   
   GLTexture2D& setWrap(GLint wrapST);
   GLTexture2D& setWrap(GLint wrapS,GLint wrapT);
+
+  GLint width(GLint level=0);
+  GLint height(GLint level=0);
 
 private:
   void init2D(GLint internalFormat,int width,int height,void* data);
@@ -180,6 +188,30 @@ GLTexture& GLTextureBase<TARGET,GLTexture>::setParameter(GLenum name,GLfloat par
   bind();
   glTexParameterf(TARGET,name,param);
   return static_cast<GLTexture&>(*this);
+}
+
+template<GLenum TARGET,typename GLTexture>
+GLint GLTextureBase<TARGET,GLTexture>::getTexLevelParameteri(GLint level,GLenum pname)
+{
+  bind();
+  GLint param = GL_INVALID_VALUE;
+  glGetTexLevelParameteriv(TARGET,level,pname,&param);
+  return param;
+}
+
+template<GLenum TARGET,typename GLTexture>
+GLfloat GLTextureBase<TARGET,GLTexture>::getTexLevelParameterf(GLint level,GLenum pname)
+{
+  bind();
+  GLfloat param = GL_INVALID_VALUE;
+  glGetTexLevelParameterfv(TARGET,level,pname,&param);
+  return param;
+}
+
+template<GLenum TARGET,typename GLTexture>
+GLint GLTextureBase<TARGET,GLTexture>::internalFormat(GLint level)
+{
+  return getTexLevelParameteri(level,GL_TEXTURE_INTERNAL_FORMAT);
 }
 
 template<GLenum TARGET,typename GLTexture> GLTexture& GLTextureBase<TARGET,GLTexture>::setMinFilter(GLint param) { return setParameter(GL_TEXTURE_MIN_FILTER,param); }
@@ -377,6 +409,16 @@ GLTexture2D& GLTexture2D::setWrap(GLint wrapS,GLint wrapT)
 GLTexture2D& GLTexture2D::setWrap(GLint wrapST)
 {
   return setWrap(wrapST,wrapST);
+}
+
+GLint GLTexture2D::width(GLint level)
+{
+  return getTexLevelParameteri(level,GL_TEXTURE_WIDTH);
+}
+
+GLint GLTexture2D::height(GLint level)
+{
+  return getTexLevelParameteri(level,GL_TEXTURE_HEIGHT);
 }
 
 //GLTexture3D::GLTexture3D() : GLTextureBase<GL_TEXTURE_3D>() {}

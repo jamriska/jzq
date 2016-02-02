@@ -7,10 +7,6 @@
 
 #include "jzq.h"
 
-// * srgb handling
-// * pack alignment
-// * auto mip?
-
 template<GLenum TARGET,typename GLTexture>
 class GLTextureBase
 {

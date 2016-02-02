@@ -15,7 +15,7 @@ template<GLenum TARGET,typename GLTexture>
 class GLTextureBase
 {
 public:
-  GLTexture& operator=(const GLTexture& t);
+  GLTexture& operator=(const GLTextureBase& t);
 
   GLTexture& bind();
   GLTexture& setParameter(GLenum name,GLint param);
@@ -128,7 +128,7 @@ void GLTextureBase<TARGET,GLTexture>::destroy(GLuint& texture,int* refCount)
 }
 
 template<GLenum TARGET,typename GLTexture>
-GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(const GLTexture& t)
+GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(const GLTextureBase<TARGET,GLTexture>& t)
 {
   if (&t!=this)
   {
@@ -142,7 +142,7 @@ GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(const GLTexture& t)
     destroy(orgTexture,orgRefCount);
   }
 
-  return static_cast<GLTexture>(*this);
+  return static_cast<GLTexture&>(*this);
 }
 
 template<GLenum TARGET,typename GLTexture>

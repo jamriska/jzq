@@ -67,13 +67,11 @@ public:
   template<typename T> GLTexture2D(const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,const Array2<T>& image);
   
-  void setTexImage(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
-
   GLTexture2D& setWrap(GLint wrapST);
   GLTexture2D& setWrap(GLint wrapS,GLint wrapT);
 
 private:
-  void init(GLint internalFormat,int width,int height,void* data);
+  void init2D(GLint internalFormat,int width,int height,void* data);
 };
 
 /*
@@ -337,9 +335,11 @@ template<> struct GLInternalFormatFor<Vec4f>         { static const GLint value 
 GLTexture2D::GLTexture2D() : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>() {}
 GLTexture2D::GLTexture2D(const GLTexture2D& t) : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>(t) {}
 
-void GLTexture2D::init(GLint internalFormat,int width,int height,void* data)
+void GLTexture2D::init2D(GLint internalFormat,int width,int height,void* data)
 {
-  setTexImage(internalFormat,width,height,formatFor(internalFormat),typeFor(internalFormat),data);
+  bind();
+  glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+  glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,formatFor(internalFormat),typeFor(internalFormat),data);
   setWrap(GL_CLAMP_TO_EDGE);
   setMinFilter(GL_NEAREST);
   setMagFilter(GL_NEAREST);
@@ -347,31 +347,24 @@ void GLTexture2D::init(GLint internalFormat,int width,int height,void* data)
 
 GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height)
 {
-  init(internalFormat,width,height,0);
+  init2D(internalFormat,width,height,0);
 }
 
 GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,void* data)
 {
-  init(internalFormat,width,height,data);
+  init2D(internalFormat,width,height,data);
 }
 
 template<typename T>
 GLTexture2D::GLTexture2D(const Array2<T>& image)
 {
-  init(GLInternalFormatFor<T>::value,image.width(),image.height(),(void*)image.data());
+  init2D(GLInternalFormatFor<T>::value,image.width(),image.height(),(void*)image.data());
 }
 
 template<typename T>
 GLTexture2D::GLTexture2D(GLint internalFormat,const Array2<T>& image)
 {
-  init(internalFormat,image.width(),image.height(),(void*)image.data());
-}
-
-void GLTexture2D::setTexImage(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
-{
-  bind();
-  glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-  glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,data);
+  init2D(internalFormat,image.width(),image.height(),(void*)image.data());
 }
 
 GLTexture2D& GLTexture2D::setWrap(GLint wrapS,GLint wrapT)

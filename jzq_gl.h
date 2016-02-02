@@ -5,6 +5,7 @@
 #ifndef JZQ_GL_H_
 #define JZQ_GL_H_
 
+#include <vector>
 #include "jzq.h"
 
 template<GLenum TARGET,typename GLTexture>
@@ -46,15 +47,28 @@ private:
   static void destroy(GLuint& texture,int* refCount);
 };
 
-/*
-class GLTexture1D : public GLTextureBase<GL_TEXTURE_1D,GL>
+class GLTexture1D : public GLTextureBase<GL_TEXTURE_1D,GLTexture1D>
 {
 public:
   GLTexture1D();
-  GLTexture1D(const GLTextureBase<GL_TEXTURE_1D>& t);
-  GLTexture1D(int width);
+  GLTexture1D(const GLTexture1D& t);
+  
+  GLTexture1D(GLint internalFormat,int width);
+  GLTexture1D(GLint internalFormat,int width,void* data);
+  GLTexture1D(GLint internalFormat,int width,GLenum format,void* data);
+  GLTexture1D(GLint internalFormat,int width,GLenum format,GLenum type,void* data);
+  
+  template<typename T> GLTexture1D(const std::vector<T>& image);
+  template<typename T> GLTexture1D(GLint internalFormat,const std::vector<T>& image);
+  template<typename T> GLTexture1D(GLint internalFormat,GLenum format,const std::vector<T>& image);
+  
+  GLTexture1D& setWrap(GLint wrapS);
+
+  GLint width(GLint level=0);
+
+private:
+  void init1D(GLint internalFormat,int width,GLenum format,GLenum type,void* data);
 };
-*/
 
 class GLTexture2D : public GLTextureBase<GL_TEXTURE_2D,GLTexture2D>
 {
@@ -81,16 +95,31 @@ private:
   void init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
 };
 
-/*
-class GLTexture3D : public GLTextureBase<GL_TEXTURE_3D>
+class GLTexture3D : public GLTextureBase<GL_TEXTURE_3D,GLTexture3D>
 {
 public:
   GLTexture3D();
-  GLTexture3D(const GLTextureBase<GL_TEXTURE_3D>& t);
-  GLTexture3D(int width,int height,int depth);
+  GLTexture3D(const GLTexture3D& t);
+  
+  GLTexture3D(GLint internalFormat,int width,int height,int depth);
+  GLTexture3D(GLint internalFormat,int width,int height,int depth,void* data);
+  GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,void* data);
+  GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,GLenum type,void* data);
+  
   template<typename T> GLTexture3D(const Array3<T>& image);
+  template<typename T> GLTexture3D(GLint internalFormat,const Array3<T>& image);
+  template<typename T> GLTexture3D(GLint internalFormat,GLenum format,const Array3<T>& image);
+  
+  GLTexture3D& setWrap(GLint wrapSTR);
+  GLTexture3D& setWrap(GLint wrapS,GLint wrapT,GLint wrapR);
+
+  GLint width(GLint level=0);
+  GLint height(GLint level=0);
+  GLint depth(GLint level=0);
+
+private:
+  void init3D(GLint internalFormat,int width,int height,int depth,GLenum format,GLenum type,void* data);
 };
-*/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -360,9 +389,6 @@ template<> struct GLInternalFormatFor<Vec2f>         { static const GLint value 
 template<> struct GLInternalFormatFor<Vec3f>         { static const GLint value = GL_RGB32F;  };
 template<> struct GLInternalFormatFor<Vec4f>         { static const GLint value = GL_RGBA32F; };
 
-//GLTexture1D::GLTexture1D() : GLTextureBase<GL_TEXTURE_1D>() {}
-//GLTexture1D::GLTexture1D(const GLTextureBase<GL_TEXTURE_1D>& t) : GLTextureBase<GL_TEXTURE_1D>(t) {}
-
 GLTexture2D::GLTexture2D() : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>() {}
 GLTexture2D::GLTexture2D(const GLTexture2D& t) : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>(t) {}
 
@@ -442,8 +468,5 @@ GLint GLTexture2D::height(GLint level)
 {
   return getTexLevelParameteri(level,GL_TEXTURE_HEIGHT);
 }
-
-//GLTexture3D::GLTexture3D() : GLTextureBase<GL_TEXTURE_3D>() {}
-//GLTexture3D::GLTexture3D(const GLTextureBase<GL_TEXTURE_3D>& t) : GLTextureBase<GL_TEXTURE_3D>(t) {}
 
 #endif

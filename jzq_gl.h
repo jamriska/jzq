@@ -53,8 +53,7 @@ public:
   GLTexture1D();
   GLTexture1D(const GLTexture1D& t);
   
-  GLTexture1D(GLint internalFormat,int width);
-  GLTexture1D(GLint internalFormat,int width,void* data);
+  GLTexture1D(GLint internalFormat,int width,void* data=0);
   GLTexture1D(GLint internalFormat,int width,GLenum format,void* data);
   GLTexture1D(GLint internalFormat,int width,GLenum format,GLenum type,void* data);
   
@@ -76,8 +75,7 @@ public:
   GLTexture2D();
   GLTexture2D(const GLTexture2D& t);
   
-  GLTexture2D(GLint internalFormat,int width,int height);
-  GLTexture2D(GLint internalFormat,int width,int height,void* data);
+  GLTexture2D(GLint internalFormat,int width,int height,void* data=0);
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data);
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
   
@@ -101,8 +99,7 @@ public:
   GLTexture3D();
   GLTexture3D(const GLTexture3D& t);
   
-  GLTexture3D(GLint internalFormat,int width,int height,int depth);
-  GLTexture3D(GLint internalFormat,int width,int height,int depth,void* data);
+  GLTexture3D(GLint internalFormat,int width,int height,int depth,void* data=0);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,void* data);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,GLenum type,void* data);
   
@@ -407,11 +404,6 @@ void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format
   setWrap(GL_CLAMP_TO_EDGE);
   setMinFilter(GL_NEAREST);
   setMagFilter(GL_NEAREST);
-}
-
-GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height)
-{
-  init2D(internalFormat,width,height,formatFor(internalFormat),typeFor(internalFormat),0);
 }
 
 GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,void* data)

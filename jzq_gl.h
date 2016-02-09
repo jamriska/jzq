@@ -25,8 +25,8 @@ public:
   GLTexture& setMaxLevel(GLint param);
   GLTexture& setLodBias(GLfloat param);
   GLTexture& generateMipmap();
-  GLuint id();
- 
+  GLuint id(); 
+  int refCount() const;
   GLint internalFormat(GLint level=0);
 
 protected:
@@ -41,10 +41,10 @@ protected:
   static GLenum typeFor(GLint internalFormat);
 
 private:
-  GLuint texture;
-  int* refCount;
+  GLuint _id;
+  int* _refCount;
   void init();
-  static void destroy(GLuint& texture,int* refCount);
+  static void destroy(GLuint& id,int* refCount);
 };
 
 class GLTexture1D : public GLTextureBase<GL_TEXTURE_1D,GLTexture1D>
@@ -123,20 +123,20 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<GLenum TARGET,typename GLTexture>
-GLTextureBase<TARGET,GLTexture>::GLTextureBase() : texture(0),refCount(0)
+GLTextureBase<TARGET,GLTexture>::GLTextureBase() : _id(0),_refCount(0)
 {
 }
 
 template<GLenum TARGET,typename GLTexture>
 GLTextureBase<TARGET,GLTexture>::GLTextureBase(const GLTexture& t)
 {
-  texture = t.texture;
-  refCount = t.refCount;
-  if (refCount!=0) { (*refCount)++; }
+  _id = t._id;
+  _refCount = t._refCount;
+  if (_refCount!=0) { (*_refCount)++; }
 }
 
 template<GLenum TARGET,typename GLTexture>
-void GLTextureBase<TARGET,GLTexture>::destroy(GLuint& texture,int* refCount)
+void GLTextureBase<TARGET,GLTexture>::destroy(GLuint& id,int* refCount)
 {
   if (refCount!=0)
   {
@@ -145,9 +145,9 @@ void GLTextureBase<TARGET,GLTexture>::destroy(GLuint& texture,int* refCount)
     {
       delete refCount;
       
-      glDeleteTextures(1,&texture);     
+      glDeleteTextures(1,&id);
       
-      texture = 0;
+      id = 0;
     }
   }
 }
@@ -157,14 +157,14 @@ GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(const GLTextureBase<TARGET
 {
   if (&t!=this)
   {
-    int* orgRefCount = refCount;
-    GLuint orgTexture = texture;
+    int* orgRefCount = _refCount;
+    GLuint orgId = _id;
 
-    texture = t.texture;
-    refCount = t.refCount;
-    if (refCount!=0) { (*refCount)++; }
+    _id = t._id;
+    _refCount = t._refCount;
+    if (_refCount!=0) { (*_refCount)++; }
 
-    destroy(orgTexture,orgRefCount);
+    destroy(orgId,orgRefCount);
   }
 
   return static_cast<GLTexture&>(*this);
@@ -173,29 +173,36 @@ GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(const GLTextureBase<TARGET
 template<GLenum TARGET,typename GLTexture>
 GLTextureBase<TARGET,GLTexture>::~GLTextureBase()
 {
-  destroy(texture,refCount);
+  destroy(_id,_refCount);
 }
 
 template<GLenum TARGET,typename GLTexture>
 void GLTextureBase<TARGET,GLTexture>::init()
 {
-  glGenTextures(1,&texture);  
-  refCount = new int;
-  *refCount = 1;
+  glGenTextures(1,&_id);
+  _refCount = new int;
+  *_refCount = 1;
 }
 
 template<GLenum TARGET,typename GLTexture>
 GLuint GLTextureBase<TARGET,GLTexture>::id()
 {
-  if (texture==0) { init(); }
-  return texture;
+  if (_id==0) { init(); }
+  return _id;
+}
+
+template<GLenum TARGET,typename GLTexture>
+int GLTextureBase<TARGET,GLTexture>::refCount() const
+{
+  if (_refCount!=0) { return *_refCount; }
+  return 0;
 }
 
 template<GLenum TARGET,typename GLTexture>
 GLTexture& GLTextureBase<TARGET,GLTexture>::bind()
 {
-  if (texture==0) { init(); }
-  glBindTexture(TARGET,texture);
+  if (_id==0) { init(); }
+  glBindTexture(TARGET,_id);
   return static_cast<GLTexture&>(*this);
 }
 

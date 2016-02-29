@@ -12,7 +12,10 @@ template<GLenum TARGET,typename GLTexture>
 class GLTextureBase
 {
 public:
-  GLTexture& operator=(const GLTextureBase& t);
+  GLTexture& operator=(GLTextureBase&& t);
+
+  GLTextureBase(const GLTextureBase& t) = delete;
+  GLTexture& operator=(const GLTextureBase& t) = delete;
 
   GLTexture& bind();
   GLTexture& setParameter(GLenum name,GLint param);
@@ -26,12 +29,11 @@ public:
   GLTexture& setLodBias(GLfloat param);
   GLTexture& generateMipmap();
   GLuint id(); 
-  int refCount() const;
   GLint internalFormat(GLint level=0);
 
 protected:
   GLTextureBase();
-  GLTextureBase(const GLTexture& t);
+  GLTextureBase(GLTextureBase&& t);
   ~GLTextureBase();
 
   GLint   getTexLevelParameteri(GLint level,GLenum pname);
@@ -42,16 +44,18 @@ protected:
 
 private:
   GLuint _id;
-  int* _refCount;
   void init();
-  static void destroy(GLuint& id,int* refCount);
 };
 
 class GLTexture1D : public GLTextureBase<GL_TEXTURE_1D,GLTexture1D>
 {
 public:
   GLTexture1D();
-  GLTexture1D(const GLTexture1D& t);
+  GLTexture1D(GLTexture1D&& t);
+  GLTexture1D& operator=(GLTexture1D&& t);
+
+  GLTexture1D(const GLTexture1D& t) = delete;
+  GLTexture1D& operator=(const GLTexture1D& t) = delete;
   
   GLTexture1D(GLint internalFormat,int width,void* data=0);
   GLTexture1D(GLint internalFormat,int width,GLenum format,void* data);
@@ -73,8 +77,12 @@ class GLTexture2D : public GLTextureBase<GL_TEXTURE_2D,GLTexture2D>
 {
 public:
   GLTexture2D();
-  GLTexture2D(const GLTexture2D& t);
-  
+  GLTexture2D(GLTexture2D&& t);
+  GLTexture2D& operator=(GLTexture2D&& t);
+
+  GLTexture2D(const GLTexture2D& t) = delete;
+  GLTexture2D& operator=(const GLTexture2D& t) = delete;
+
   GLTexture2D(GLint internalFormat,int width,int height,void* data=0);
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data);
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
@@ -104,7 +112,11 @@ class GLTexture3D : public GLTextureBase<GL_TEXTURE_3D,GLTexture3D>
 {
 public:
   GLTexture3D();
-  GLTexture3D(const GLTexture3D& t);
+  GLTexture3D(GLTexture3D&& t);
+  GLTexture3D& operator=(GLTexture3D&& t);
+
+  GLTexture3D(const GLTexture3D& t) = delete;
+  GLTexture3D& operator=(const GLTexture3D& t) = delete;
   
   GLTexture3D(GLint internalFormat,int width,int height,int depth,void* data=0);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,void* data);
@@ -130,65 +142,35 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<GLenum TARGET,typename GLTexture>
-GLTextureBase<TARGET,GLTexture>::GLTextureBase() : _id(0),_refCount(0)
-{
-}
+GLTextureBase<TARGET,GLTexture>::GLTextureBase() : _id(0) {}
 
 template<GLenum TARGET,typename GLTexture>
-GLTextureBase<TARGET,GLTexture>::GLTextureBase(const GLTexture& t)
+GLTextureBase<TARGET,GLTexture>::GLTextureBase(GLTextureBase<TARGET,GLTexture>&& t)
 {
   _id = t._id;
-  _refCount = t._refCount;
-  if (_refCount!=0) { (*_refCount)++; }
+  t._id = 0;
 }
 
 template<GLenum TARGET,typename GLTexture>
-void GLTextureBase<TARGET,GLTexture>::destroy(GLuint& id,int* refCount)
+GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(GLTextureBase<TARGET,GLTexture>&& t)
 {
-  if (refCount!=0)
-  {
-    (*refCount)--;
-    if (*refCount==0)
-    {
-      delete refCount;
-      
-      glDeleteTextures(1,&id);
-      
-      id = 0;
-    }
-  }
-}
-
-template<GLenum TARGET,typename GLTexture>
-GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(const GLTextureBase<TARGET,GLTexture>& t)
-{
-  if (&t!=this)
-  {
-    int* orgRefCount = _refCount;
-    GLuint orgId = _id;
-
-    _id = t._id;
-    _refCount = t._refCount;
-    if (_refCount!=0) { (*_refCount)++; }
-
-    destroy(orgId,orgRefCount);
-  }
-
+  if (_id!=0) { glDeleteTextures(1,&_id); }
+  _id = 0;
+  _id = t._id;
+  t._id = 0;
   return static_cast<GLTexture&>(*this);
 }
 
 template<GLenum TARGET,typename GLTexture>
 GLTextureBase<TARGET,GLTexture>::~GLTextureBase()
-{
-  destroy(_id,_refCount);
+{  
+  if (_id!=0) { glDeleteTextures(1,&_id); }
 }
 
 template<GLenum TARGET,typename GLTexture>
 void GLTextureBase<TARGET,GLTexture>::init()
 {
   glGenTextures(1,&_id);
-  _refCount = new int;
-  *_refCount = 1;
 }
 
 template<GLenum TARGET,typename GLTexture>
@@ -196,13 +178,6 @@ GLuint GLTextureBase<TARGET,GLTexture>::id()
 {
   if (_id==0) { init(); }
   return _id;
-}
-
-template<GLenum TARGET,typename GLTexture>
-int GLTextureBase<TARGET,GLTexture>::refCount() const
-{
-  if (_refCount!=0) { return *_refCount; }
-  return 0;
 }
 
 template<GLenum TARGET,typename GLTexture>
@@ -400,8 +375,9 @@ template<> struct GLInternalFormatFor<Vec2f>         { static const GLint value 
 template<> struct GLInternalFormatFor<Vec3f>         { static const GLint value = GL_RGB32F;  };
 template<> struct GLInternalFormatFor<Vec4f>         { static const GLint value = GL_RGBA32F; };
 
-GLTexture2D::GLTexture2D() : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>() {}
-GLTexture2D::GLTexture2D(const GLTexture2D& t) : GLTextureBase<GL_TEXTURE_2D,GLTexture2D>(t) {}
+GLTexture2D::GLTexture2D() {}
+GLTexture2D::GLTexture2D(GLTexture2D&& t) : GLTextureBase(std::move(t)) {}
+GLTexture2D& GLTexture2D::operator=(GLTexture2D&& t) { return GLTextureBase::operator=(std::move(t)); }
 
 void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
 {

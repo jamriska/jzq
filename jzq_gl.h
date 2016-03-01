@@ -90,13 +90,6 @@ public:
   template<typename T> GLTexture2D(const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,GLenum format,const Array2<T>& image);
-
-  GLTexture2D& setTexImage(GLint internalFormat,int width,int height,void* data=0);
-  GLTexture2D& setTexImage(GLint internalFormat,int width,int height,GLenum format,void* data);
-  GLTexture2D& setTexImage(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data); 
-  template<typename T> GLTexture2D& setTexImage(const Array2<T>& image);
-  template<typename T> GLTexture2D& setTexImage(GLint internalFormat,const Array2<T>& image);
-  template<typename T> GLTexture2D& setTexImage(GLint internalFormat,GLenum format,const Array2<T>& image);
   
   GLTexture2D& setWrap(GLint wrapST);
   GLTexture2D& setWrap(GLint wrapS,GLint wrapT);
@@ -382,7 +375,15 @@ GLTexture2D& GLTexture2D::operator=(GLTexture2D&& t) { return GLTextureBase::ope
 void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
 {
   bind();
-  setTexImage(internalFormat,width,height,format,type,data);
+  glPixelStorei(GL_UNPACK_SWAP_BYTES,GL_FALSE);
+  glPixelStorei(GL_UNPACK_LSB_FIRST,GL_FALSE);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
+  glPixelStorei(GL_UNPACK_IMAGE_HEIGHT,0);
+  glPixelStorei(GL_UNPACK_SKIP_ROWS,0);
+  glPixelStorei(GL_UNPACK_SKIP_PIXELS,0);
+  glPixelStorei(GL_UNPACK_SKIP_IMAGES,0);
+  glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+  glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,data);  
   setWrap(GL_CLAMP_TO_EDGE);
   setMinFilter(GL_NEAREST);
   setMagFilter(GL_NEAREST);
@@ -419,49 +420,6 @@ template<typename T>
 GLTexture2D::GLTexture2D(GLint internalFormat,GLenum format,const Array2<T>& image)
 {
   init2D(internalFormat,image.width(),image.height(),format,typeFor(GLInternalFormatFor<T>::value),(void*)image.data());
-}
-
-GLTexture2D& GLTexture2D::setTexImage(GLint internalFormat,int width,int height,void* data)
-{
-  return setTexImage(internalFormat,width,height,formatFor(internalFormat),typeFor(internalFormat),data);
-}
-
-GLTexture2D& GLTexture2D::setTexImage(GLint internalFormat,int width,int height,GLenum format,void* data)
-{
-  return setTexImage(internalFormat,width,height,format,typeFor(internalFormat),data);
-}
-
-GLTexture2D& GLTexture2D::setTexImage(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
-{
-  bind();
-  glPixelStorei(GL_UNPACK_SWAP_BYTES,GL_FALSE);
-  glPixelStorei(GL_UNPACK_LSB_FIRST,GL_FALSE);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
-  glPixelStorei(GL_UNPACK_IMAGE_HEIGHT,0);
-  glPixelStorei(GL_UNPACK_SKIP_ROWS,0);
-  glPixelStorei(GL_UNPACK_SKIP_PIXELS,0);
-  glPixelStorei(GL_UNPACK_SKIP_IMAGES,0);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-  glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,data);
-  return *this;
-}
-
-template<typename T>
-GLTexture2D& GLTexture2D::setTexImage(const Array2<T>& image)
-{
-  return setTexImage(GLInternalFormatFor<T>::value,image.width(),image.height(),formatFor(GLInternalFormatFor<T>::value),typeFor(GLInternalFormatFor<T>::value),(void*)image.data());
-}
-
-template<typename T>
-GLTexture2D& GLTexture2D::setTexImage(GLint internalFormat,const Array2<T>& image)
-{
-  return setTexImage(internalFormat,image.width(),image.height(),formatFor(GLInternalFormatFor<T>::value),typeFor(GLInternalFormatFor<T>::value),(void*)image.data());
-}
-
-template<typename T>
-GLTexture2D& GLTexture2D::setTexImage(GLint internalFormat,GLenum format,const Array2<T>& image)
-{
-  return setTexImage(internalFormat,image.width(),image.height(),format,typeFor(GLInternalFormatFor<T>::value),(void*)image.data());
 }
 
 GLTexture2D& GLTexture2D::setWrap(GLint wrapS,GLint wrapT)

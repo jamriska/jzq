@@ -61,7 +61,7 @@ public:
   GLTexture1D(GLint internalFormat,int width,GLenum format,void* data);
   GLTexture1D(GLint internalFormat,int width,GLenum format,GLenum type,void* data);
   
-  template<typename T> GLTexture1D(const std::vector<T>& image);
+  template<typename T> explicit GLTexture1D(const std::vector<T>& image);
   template<typename T> GLTexture1D(GLint internalFormat,const std::vector<T>& image);
   template<typename T> GLTexture1D(GLint internalFormat,GLenum format,const std::vector<T>& image);
   
@@ -87,7 +87,7 @@ public:
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data);
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
   
-  template<typename T> GLTexture2D(const Array2<T>& image);
+  template<typename T> explicit GLTexture2D(const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,GLenum format,const Array2<T>& image);
   
@@ -115,7 +115,7 @@ public:
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,void* data);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,GLenum type,void* data);
   
-  template<typename T> GLTexture3D(const Array3<T>& image);
+  template<typename T> explicit GLTexture3D(const Array3<T>& image);
   template<typename T> GLTexture3D(GLint internalFormat,const Array3<T>& image);
   template<typename T> GLTexture3D(GLint internalFormat,GLenum format,const Array3<T>& image);
   

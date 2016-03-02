@@ -526,16 +526,12 @@ GLShader::GLShader(const std::string& vertexShaderSource,
 
   glGetProgramiv(program,GL_LINK_STATUS,&_linkStatus);
   
-  if (_linkStatus==GL_FALSE)
-  {
-    GLint length = 0;
-    glGetProgramiv(program,GL_INFO_LOG_LENGTH,&length);
+  GLint logLength = 0;
+  glGetProgramiv(program,GL_INFO_LOG_LENGTH,&logLength);
 
-    std::vector<GLchar> programInfoLog(length);
-    glGetProgramInfoLog(program,length,&length,&programInfoLog[0]);
-    
-    _infoLog = programInfoLog.data();
-  }
+  _infoLog.resize(logLength);
+  glGetProgramInfoLog(program,logLength,&logLength,&_infoLog[0]);
+  _infoLog.pop_back();
 
   glDetachShader(program,vertexShader);
   glDetachShader(program,fragmentShader);

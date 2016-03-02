@@ -114,7 +114,7 @@ public:
   GLTexture3D(GLint internalFormat,int width,int height,int depth,void* data=0);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,void* data);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,GLenum type,void* data);
-  
+
   template<typename T> explicit GLTexture3D(const Array3<T>& image);
   template<typename T> GLTexture3D(GLint internalFormat,const Array3<T>& image);
   template<typename T> GLTexture3D(GLint internalFormat,GLenum format,const Array3<T>& image);
@@ -128,6 +128,32 @@ public:
 
 private:
   void init3D(GLint internalFormat,int width,int height,int depth,GLenum format,GLenum type,void* data);
+};
+
+class GLShader
+{
+public:
+  GLShader();
+  GLShader(GLShader&& shader);
+  GLShader& operator=(GLShader&& shader);
+  ~GLShader();
+
+  GLShader(const GLShader& shader) = delete;
+  GLShader& operator=(const GLShader& shader) = delete;
+
+  GLShader(const std::string& vertexShaderSource,
+           const std::string& fragmentShaderSource);
+
+  GLShader& use();
+  GLint linkStatus();
+  std::string infoLog();
+  
+private:
+  GLuint _id;
+  GLint _linkStatus;
+  std::string _infoLog;
+
+  GLuint compileShader(GLenum type,const std::string& source);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -442,6 +468,98 @@ GLint GLTexture2D::width(GLint level)
 GLint GLTexture2D::height(GLint level)
 {
   return getTexLevelParameteri(level,GL_TEXTURE_HEIGHT);
+}
+
+GLShader::GLShader() : _id(0),_linkStatus(GL_FALSE),_infoLog("") {}
+
+GLShader::GLShader(GLShader&& shader)
+{
+  _id = shader._id;
+  _linkStatus = shader._linkStatus;
+  _infoLog = std::move(shader._infoLog);
+  shader._id = 0;
+  shader._linkStatus = GL_FALSE;
+}
+
+GLShader& GLShader::operator=(GLShader&& shader)
+{
+  if (_id!=0) { glDeleteProgram(_id); }
+  _id = 0;
+  _id = shader._id;
+  _linkStatus = shader._linkStatus;
+  _infoLog = std::move(shader._infoLog);
+  shader._id = 0;
+  shader._linkStatus = GL_FALSE;
+  return *this;
+}
+
+GLShader::~GLShader()
+{
+  if (_id!=0) { glDeleteProgram(_id); }
+}
+
+GLuint GLShader::compileShader(GLenum type,const std::string& source)
+{
+  const GLuint shader = glCreateShader(type);
+
+  const GLchar* shaderSource = (const GLchar*)source.c_str();
+  glShaderSource(shader,1,&shaderSource,0);
+
+  glCompileShader(shader);
+
+  return shader;
+}
+
+GLShader::GLShader(const std::string& vertexShaderSource,
+                   const std::string& fragmentShaderSource)
+: _id(0),_linkStatus(GL_FALSE),_infoLog("")
+{
+  const GLuint vertexShader = compileShader(GL_VERTEX_SHADER,vertexShaderSource);
+  const GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER,fragmentShaderSource);
+
+  const GLuint program = glCreateProgram();
+
+  glAttachShader(program,vertexShader);
+  glAttachShader(program,fragmentShader);
+
+  glLinkProgram(program);
+
+  glGetProgramiv(program,GL_LINK_STATUS,&_linkStatus);
+  
+  if (_linkStatus==GL_FALSE)
+  {
+    GLint length = 0;
+    glGetProgramiv(program,GL_INFO_LOG_LENGTH,&length);
+
+    std::vector<GLchar> programInfoLog(length);
+    glGetProgramInfoLog(program,length,&length,&programInfoLog[0]);
+    
+    _infoLog = programInfoLog.data();
+  }
+
+  glDetachShader(program,vertexShader);
+  glDetachShader(program,fragmentShader);
+
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
+
+  _id = program;
+}
+
+GLShader& GLShader::use()
+{
+  glUseProgram(_id);
+  return *this;
+}
+
+GLint GLShader::linkStatus()
+{
+  return _linkStatus;
+}
+
+std::string GLShader::infoLog()
+{
+  return _infoLog;
 }
 
 #endif

@@ -20,6 +20,8 @@ template<typename T> inline T lerp(const T& a,const T& b,const T& t);
 
 inline std::string spf(const std::string fmt,...);
 
+inline FILE* jzq_fopen(const char* filename,const char* mode);
+
 template<int N,typename T>
 struct Vec  
 {
@@ -621,6 +623,47 @@ inline std::string spf(const std::string fmt,...)
   }
 
   return std::string(&buf[0]);
+}
+
+#ifdef _WIN32
+extern "C"
+{
+  __declspec(dllimport)
+  int __stdcall MultiByteToWideChar
+  (
+    unsigned int CodePage,
+    unsigned long dwFlags,
+    const char* lpMultiByteStr,
+    int cbMultiByte,
+    wchar_t* lpWideCharStr,
+    int cchWideChar
+  );
+
+  FILE* _wfopen(const wchar_t* filename,const wchar_t* mode);
+}
+#endif
+
+namespace jzq_detail
+{
+  inline std::wstring utf8_to_wide(const std::string& str)
+  {
+    const unsigned int codePageUTF8 = 65001;
+    const int size = MultiByteToWideChar(codePageUTF8,0,(char*)str.c_str(),-1,NULL,0);
+    std::wstring wide_str(size,0);
+    MultiByteToWideChar(codePageUTF8,0,(char*)str.c_str(),-1,&wide_str[0],size);
+    wide_str.resize(size-1);
+    return wide_str;
+  }
+}
+
+inline FILE* jzq_fopen(const char* filename,const char* mode)
+{
+#ifdef _WIN32
+  return _wfopen(jzq_detail::utf8_to_wide(filename).c_str(),
+                 jzq_detail::utf8_to_wide(mode).c_str());
+#else
+  return fopen(filename,mode);
+#endif
 }
 
 template<int N,typename T>

@@ -662,4 +662,27 @@ GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture1D& text
 GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture2D& texture) { return _bindTexture<GLTexture2D,GL_SAMPLER_2D>(samplerName,texture); }
 GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture3D& texture) { return _bindTexture<GLTexture3D,GL_SAMPLER_3D>(samplerName,texture); }
 
+namespace jzq_detail
+{
+  inline std::string stringFromFile(const std::string& fileName)
+  {
+    FILE* f = fopen(fileName.c_str(),"rb");
+    if (!f) { return std::string(); }
+    fseek(f,0,SEEK_END);
+    const int size = ftell(f);
+    rewind(f);
+    std::string content(size,'\0');
+    if (fread(&content[0],sizeof(char),size,f)!=size) { content.clear(); }
+    fclose(f);
+    return content;
+  }
+}
+
+GLShader GLShaderFromFile(const std::string& vertexShaderFileName,
+                          const std::string& fragmentShaderFileName)
+{
+  return GLShader(jzq_detail::stringFromFile(vertexShaderFileName),
+                  jzq_detail::stringFromFile(fragmentShaderFileName));
+}
+
 #endif

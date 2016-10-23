@@ -666,7 +666,7 @@ namespace jzq_detail
 {
   inline std::string stringFromFile(const std::string& fileName)
   {
-    FILE* f = fopen(fileName.c_str(),"rb");
+    FILE* f = jzq_fopen(fileName.c_str(),"rb");
     if (!f) { return std::string(); }
     fseek(f,0,SEEK_END);
     const int size = ftell(f);

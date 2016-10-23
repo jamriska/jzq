@@ -11,7 +11,7 @@
 #include <cstdarg>
 #include <vector>
 #include <string>
-#include <algorithm>  
+#include <algorithm>
 
 template<typename T> struct zero { static T value(); };
 
@@ -23,28 +23,28 @@ inline std::string spf(const std::string fmt,...);
 inline FILE* jzq_fopen(const char* filename,const char* mode);
 
 template<int N,typename T>
-struct Vec  
+struct Vec
 {
   T v[N];
-  
-  Vec<N,T>();    
+
+  Vec<N,T>();
   template<typename T2> explicit Vec<N,T>(const Vec<N,T2>& u);
   explicit Vec<N,T>(T v0);
-   
+
   Vec<N,T>(T v0,T v1);
   Vec<N,T>(T v0,T v1,T v2);
   Vec<N,T>(T v0,T v1,T v2,T v3);
   Vec<N,T>(T v0,T v1,T v2,T v3,T v4);
   Vec<N,T>(T v0,T v1,T v2,T v3,T v4,T v5);
-  
+
   T&       operator()(int i);
   const T& operator()(int i) const;
   T&       operator[](int i);
   const T& operator[](int i) const;
-    
-  Vec<N,T> operator*=(const Vec<N,T>& u); 
+
+  Vec<N,T> operator*=(const Vec<N,T>& u);
   Vec<N,T> operator+=(const Vec<N,T>& u);
-    
+
   Vec<N,T> operator*=(T s);
   Vec<N,T> operator+=(T s);
 };
@@ -121,34 +121,34 @@ template<int M,int N,typename T> Mat<N,M,T> transpose(const Mat<M,N,T>& A);
 template<typename T>
 class Array2
 {
-public:  
+public:
   Array2();
   Array2(int width,int height);
-  explicit Array2(const Vec<2,int>& size);     
-  Array2(const Array2<T>& a);       
+  explicit Array2(const Vec<2,int>& size);
+  Array2(const Array2<T>& a);
   ~Array2();
-  
+
   Array2&  operator=(const Array2<T>& a);
 
   inline T&       operator[](int i);
   inline const T& operator[](int i) const;
-  inline T&       operator()(int i,int j);  
-  inline const T& operator()(int i,int j) const;  
+  inline T&       operator()(int i,int j);
+  inline const T& operator()(int i,int j) const;
   inline T&       operator()(const Vec<2,int>& ij);
   inline const T& operator()(const Vec<2,int>& ij) const;
-   
+
   Vec<2,int> size() const;
-  int        size(int dim) const; 
+  int        size(int dim) const;
   int        width() const;
   int        height() const;
-  int        numel() const;  
-  bool       empty() const;  
-  T*         data();  
+  int        numel() const;
+  bool       empty() const;
+  T*         data();
   const T*   data() const;
-  void       clear();  
+  void       clear();
   void       swap(Array2<T>& b);
-      
-private:  
+
+private:
   Vec<2,int> s;
   T* d;
 };
@@ -156,7 +156,7 @@ private:
 template<typename T> Vec<2,int> size(const Array2<T>& a);
 template<typename T> int        size(const Array2<T>& a,int dim);
 template<typename T> int        numel(const Array2<T>& a);
-template<typename T> bool       empty(const Array2<T>& a);  
+template<typename T> bool       empty(const Array2<T>& a);
 template<typename T> void       clear(Array2<T>* a);
 template<typename T> void       swap(Array2<T>& a,Array2<T>& b);
 template<typename T> T          min(const Array2<T>& a);
@@ -176,39 +176,39 @@ template<typename T> bool       a2write(const Array2<T>& A,const std::string& fi
 template<typename T>
 class Array3
 {
-public:  
+public:
   Array3();
   explicit Array3(const Vec<3,int>& size);
-  Array3(int width,int height,int depth);  
+  Array3(int width,int height,int depth);
   Array3(const Array3<T>& a);
   ~Array3();
 
-  Array3& operator=(const Array3<T>& a);      
-  
+  Array3& operator=(const Array3<T>& a);
+
   inline T&       operator[](int i);
-  inline const T& operator[](int i) const;  
-  inline T&       operator()(int i,int j,int k);  
-  inline const T& operator()(int i,int j,int k) const;  
-  inline T&       operator()(const Vec<3,int>& ijk);  
+  inline const T& operator[](int i) const;
+  inline T&       operator()(int i,int j,int k);
+  inline const T& operator()(int i,int j,int k) const;
+  inline T&       operator()(const Vec<3,int>& ijk);
   inline const T& operator()(const Vec<3,int>& ijk) const;
-   
+
   Vec<3,int> size() const;
-  int        size(int dim) const;  
-  int        width() const;  
+  int        size(int dim) const;
+  int        width() const;
   int        height() const;
-  int        depth() const;  
+  int        depth() const;
   int        numel() const;
   bool       empty() const;
-  T*         data();  
+  T*         data();
   const T*   data() const;
-  void       clear();  
+  void       clear();
   void       swap(Array3<T>& b);
-      
-private:  
+
+private:
   Vec<3,int> s;
   T* d;
 };
-  
+
 template<typename T> Vec<3,int> size(const Array3<T>& a);
 template<typename T> int        size(const Array3<T>& a,int dim);
 template<typename T> int        numel(const Array3<T>& a);
@@ -583,7 +583,7 @@ struct zero<Mat<M,N,T>>
     for(int i=0;i<M;i++)
     for(int j=0;j<N;j++)
     {
-      z(i,j) = zero<T>::value(); 
+      z(i,j) = zero<T>::value();
     }
     return z;
   }
@@ -612,11 +612,11 @@ inline std::string spf(const std::string fmt,...)
     if (size>16*1024*1024) { return std::string(""); }
 
     buf.resize(size);
-    
+
     va_start(ap,fmt);
     const int n = vsnprintf(&buf[0],size-1,fmt.c_str(),ap);
     va_end(ap);
-    
+
     if      (n>-1 && n<size) { break; }
     else if (n>-1)           { size = n + 1; }
     else                     { size = 2*size; }
@@ -763,7 +763,7 @@ Vec<N,T> Vec<N,T>::operator+=(const Vec<N,T>& u)
   for(int i=0;i<N;i++) v[i]+=u(i);
   return *this;
 }
-  
+
 template<int N,typename T>
 Vec<N,T> Vec<N,T>::operator*=(T s)
 {
@@ -904,10 +904,10 @@ inline Vec<N,T> lerp(const Vec<N,T>& a,const Vec<N,T>& b,const T& t)
   return (T(1)-t)*a+t*b;
 }
 
-template<int N,typename T> 
+template<int N,typename T>
 inline T dot(const Vec<N,T>& u,const Vec<N,T>& v)
 {
-  assert(N>0);  
+  assert(N>0);
   T sumprod = u(0)*v(0);
   for(int i=1;i<N;i++) sumprod += u(i)*v(i);
   return sumprod;
@@ -915,27 +915,27 @@ inline T dot(const Vec<N,T>& u,const Vec<N,T>& v)
 
 template<typename T>
 inline T cross(const Vec<2,T> &a,const Vec<2,T> &b)
-{ 
+{
   return a[0]*b[1]-a[1]*b[0];
 }
 
 template<typename T>
 inline Vec<3,T> cross(const Vec<3,T> &a,const Vec<3,T> &b)
-{ 
+{
   return Vec<3,T>(a[1]*b[2]-a[2]*b[1],
                   a[2]*b[0]-a[0]*b[2],
-                  a[0]*b[1]-a[1]*b[0]); 
+                  a[0]*b[1]-a[1]*b[0]);
 }
 
 template<int N,typename T>
 inline T norm(const Vec<N,T>& u)
-{ 
+{
   return std::sqrt(dot(u,u));
 }
 
 template<int N,typename T>
 inline Vec<N,T> normalize(const Vec<N,T>& u)
-{ 
+{
   return u/norm(u);
 }
 
@@ -999,20 +999,20 @@ template<int N,typename T>
 inline T sum(const Vec<N,T>& u)
 {
   assert(N>0);
-  
+
   T sumval = u(0);
 
   for(int i=1;i<N;i++)
   {
     sumval += u(i);
   }
-  
+
   return sumval;
 }
 
 namespace std
 {
-template<int N,typename T> Vec<N,T> 
+template<int N,typename T> Vec<N,T>
 inline min(const Vec<N,T>& u,const Vec<N,T>& v)
 {
   assert(N>0);
@@ -1027,7 +1027,7 @@ inline min(const Vec<N,T>& u,const Vec<N,T>& v)
   return w;
 }
 
-template<int N,typename T> Vec<N,T> 
+template<int N,typename T> Vec<N,T>
 inline max(const Vec<N,T>& u,const Vec<N,T>& v)
 {
   assert(N>0);
@@ -1202,16 +1202,16 @@ Array2<T>::Array2(const Vec2i& size)
   s = size;
   d = new T[s(0)*s(1)];
 }
-   
+
 template<typename T>
 Array2<T>::Array2(const Array2<T>& a)
-{    
+{
   s = a.s;
-  
+
   if (s(0)>0 && s(1)>0)
   {
     d = new T[s(0)*s(1)];
-  
+
     for(int i=0;i<s(0)*s(1);i++) d[i] = a.d[i];
   }
   else
@@ -1233,10 +1233,10 @@ Array2<T>& Array2<T>::operator=(const Array2<T>& a)
     {
       delete[] d;
       s = a.s;
-  
+
       if (a.s(0)>0 && a.s(1)>0)
       {
-        d = new T[s(0)*s(1)];  
+        d = new T[s(0)*s(1)];
         for(int i=0;i<s(0)*s(1);i++) d[i] = a.d[i];
       }
       else
@@ -1245,17 +1245,17 @@ Array2<T>& Array2<T>::operator=(const Array2<T>& a)
       }
     }
   }
-  
+
   return *this;
 }
 
-template<typename T>        
+template<typename T>
 Array2<T>::~Array2()
 {
   delete[] d;
 }
-  
-template<typename T>  
+
+template<typename T>
 inline T& Array2<T>::operator[](int i)
 {
   assert(i>=0 && i<numel());
@@ -1277,60 +1277,60 @@ inline T& Array2<T>::operator()(int i,int j)
   assert(d!=0);
   assert(i>=0 && i<s(0) &&
          j>=0 && j<s(1));
-  
+
   return d[i+j*s(0)];
 }
-  
-template<typename T>  
+
+template<typename T>
 inline const T& Array2<T>::operator()(int i,int j) const
 {
   assert(d!=0);
   assert(i>=0 && i<s(0) &&
          j>=0 && j<s(1));
-  
+
   return d[i+j*s(0)];
 }
 
-template<typename T>  
+template<typename T>
 inline T& Array2<T>::operator()(const Vec<2,int>& ij)
 {
   assert(d!=0);
   assert(ij(0)>=0 && ij(0)<s(0) &&
          ij(1)>=0 && ij(1)<s(1));
-  
+
   return d[ij(0)+ij(1)*s(0)];
 }
-  
-template<typename T>  
+
+template<typename T>
 inline const T& Array2<T>::operator()(const Vec<2,int>& ij) const
 {
   assert(d!=0);
   assert(ij(0)>=0 && ij(0)<s(0) &&
          ij(1)>=0 && ij(1)<s(1));
-  
+
   return d[ij(0)+ij(1)*s(0)];
 }
 
-template<typename T>   
+template<typename T>
 Vec2i Array2<T>::size() const
 {
   return s;
 }
 
-template<typename T>  
+template<typename T>
 int Array2<T>::size(int dim) const
 {
   assert(dim==0 || dim==1);
   return size()(dim);
 }
 
-template<typename T>  
+template<typename T>
 int Array2<T>::width() const
 {
   return size(0);
 }
-  
-template<typename T>  
+
+template<typename T>
 int Array2<T>::height() const
 {
   return size(1);
@@ -1339,7 +1339,7 @@ int Array2<T>::height() const
 template<typename T>
 int Array2<T>::numel() const
 {
-  return size(0)*size(1);  
+  return size(0)*size(1);
 }
 
 template<typename T>
@@ -1348,38 +1348,38 @@ bool Array2<T>::empty() const
   return (numel()==0);
 }
 
-template<typename T>  
+template<typename T>
 T* Array2<T>::data()
 {
   return d;
 }
-  
-template<typename T>  
+
+template<typename T>
 const T* Array2<T>::data() const
 {
   return d;
 }
 
-template<typename T>  
+template<typename T>
 void Array2<T>::clear()
 {
   delete[] d;
   s = Vec2i(0,0);
-  d = 0;    
+  d = 0;
 }
-  
-template<typename T>  
+
+template<typename T>
 void Array2<T>::swap(Array2<T>& b)
 {
   Vec2i tmp_s = s;
   s = b.s;
-  b.s = tmp_s;        
-  
+  b.s = tmp_s;
+
   T* tmp_d = d;
   d = b.d;
   b.d = tmp_d;
 }
-  
+
 template<typename T>
 Vec2i size(const Array2<T>& a)
 {
@@ -1395,13 +1395,13 @@ int size(const Array2<T>& a,int dim)
 template<typename T>
 int numel(const Array2<T>& a)
 {
-  return a.numel();  
+  return a.numel();
 }
 
 template<typename T>
 bool empty(const Array2<T>& a)
 {
-  return a.empty();  
+  return a.empty();
 }
 
 template<typename T>
@@ -1413,20 +1413,20 @@ void clear(Array2<T>* a)
 template<typename T>
 void swap(Array2<T>& a,Array2<T>& b)
 {
-  a.swap(b);    
+  a.swap(b);
 }
 
 template<typename T>
 T min(const Array2<T>& a)
 {
   assert(numel(a)>0);
-  
+
   const int n = numel(a);
 
-  const T* d = a.data();  
+  const T* d = a.data();
 
   T minval = d[0];
-   
+
   for(int i=1;i<n;i++) minval = (d[i]<minval) ? d[i] : minval;
 
   return minval;
@@ -1436,13 +1436,13 @@ template<typename T>
 T max(const Array2<T>& a)
 {
   assert(numel(a)>0);
-  
+
   const int n = numel(a);
 
-  const T* d = a.data();  
+  const T* d = a.data();
 
   T maxval = d[0];
-   
+
   for(int i=1;i<n;i++) maxval = (maxval<d[i]) ? d[i] : maxval;
 
   return maxval;
@@ -1452,31 +1452,31 @@ template<typename T>
 Vec<2,T> minmax(const Array2<T>& a)
 {
   assert(numel(a)>0);
-  
+
   const int n = numel(a);
 
-  const T* d = a.data();  
+  const T* d = a.data();
 
   T minval = d[0];
   T maxval = d[0];
-   
+
   for(int i=1;i<n;i++)
   {
     minval = (d[i]<minval) ? d[i] : minval;
     maxval = (maxval<d[i]) ? d[i] : maxval;
   }
 
-  return Vec<2,T>(minval,maxval);  
+  return Vec<2,T>(minval,maxval);
 }
 
 template<typename T>
 Vec2i argmin(const Array2<T>& a)
 {
   assert(numel(a)>0);
-  
+
   T minValue = a(0,0);
   Vec2i minIndex = Vec2i(0,0);
-  
+
   for(int j=0;j<a.height();j++)
   {
     for(int i=0;i<a.width();i++)
@@ -1485,10 +1485,10 @@ Vec2i argmin(const Array2<T>& a)
       {
         minValue = a(i,j);
         minIndex = Vec2i(i,j);
-      }    
+      }
     }
   }
-  
+
   return minIndex;
 }
 
@@ -1496,10 +1496,10 @@ template<typename T>
 Vec2i argmax(const Array2<T>& a)
 {
   assert(numel(a)>0);
-  
+
   T maxValue = a(0,0);
   Vec2i maxIndex = Vec2i(0,0);
-  
+
   for(int j=0;j<a.height();j++)
   {
     for(int i=0;i<a.width();i++)
@@ -1508,10 +1508,10 @@ Vec2i argmax(const Array2<T>& a)
       {
         maxValue = a(i,j);
         maxIndex = Vec2i(i,j);
-      }    
+      }
     }
   }
-  
+
   return maxIndex;
 }
 
@@ -1519,13 +1519,13 @@ template<typename T>
 T sum(const Array2<T>& a)
 {
   assert(numel(a)>0);
-  
+
   const int n = numel(a);
 
-  const T* d = a.data();  
+  const T* d = a.data();
 
   T sumval = d[0];
-   
+
   for(int i=1;i<n;i++) sumval += d[i];
 
   return sumval;
@@ -1536,31 +1536,31 @@ void fill(Array2<T>* a,const T& value)
 {
   assert(a!=0);
   assert(a->numel()>0);
-  
+
   const int n = a->numel();
-  T* d = a->data();  
-   
-  for(int i=0;i<n;i++) d[i] = value;  
+  T* d = a->data();
+
+  for(int i=0;i<n;i++) d[i] = value;
 }
 
 template<typename T,typename F>
 Array2<T> apply(const Array2<T>& a,F fun)
 {
   assert(numel(a) > 0);
-  
+
   Array2<T> fun_a(size(a));
-  
+
   const int n = numel(a);
-   
+
   for(int i=0;i<n;i++) fun_a.data()[i] = fun(a.data()[i]);
-  
+
   return fun_a;
 }
 
 template<typename T>
 Array2<T> a2read(const std::string& fileName)
 {
-  Array2<T> A; 
+  Array2<T> A;
   if(!a2read(&A,fileName)) { return Array2<T>(); }
   return A;
 }
@@ -1569,11 +1569,11 @@ template<typename T>
 bool a2read(Array2<T>* out_A,const std::string& fileName)
 {
   FILE* f = fopen(fileName.c_str(),"rb");
-  
+
   if(!f) { return false; }
 
-  int w,h,s;  
-  
+  int w,h,s;
+
   if(fread(&w,sizeof(w),1,f)!=1 ||
      fread(&h,sizeof(h),1,f)!=1 ||
      fread(&s,sizeof(s),1,f)!=1 ||
@@ -1582,7 +1582,7 @@ bool a2read(Array2<T>* out_A,const std::string& fileName)
     fclose(f);
     return false;
   }
-  
+
   Array2<T> A(w,h);
 
   if(fread(A.data(),sizeof(T)*w*h,1,f)!=1)
@@ -1592,7 +1592,7 @@ bool a2read(Array2<T>* out_A,const std::string& fileName)
   }
 
   if(out_A!=0) { *out_A = A; }
-    
+
   fclose(f);
   return true;
 }
@@ -1603,13 +1603,13 @@ bool a2write(const Array2<T>& A,const std::string& fileName)
   if(A.numel()==0) { return false; }
 
   FILE* f = fopen(fileName.c_str(),"wb");
-  
+
   if(!f) { return false; }
 
   const int w = A.width();
   const int h = A.height();
   const int s = sizeof(T);
-  
+
   if(fwrite(&w,sizeof(w),1,f)!=1 ||
      fwrite(&h,sizeof(h),1,f)!=1 ||
      fwrite(&s,sizeof(s),1,f)!=1 ||
@@ -1618,7 +1618,7 @@ bool a2write(const Array2<T>& A,const std::string& fileName)
     fclose(f);
     return false;
   }
-  
+
   fclose(f);
   return true;
 }
@@ -1641,16 +1641,16 @@ Array3<T>::Array3(const Vec3i& size)
   s = size;
   d = new T[s(0)*s(1)*s(2)];
 }
- 
+
 template<typename T>
 Array3<T>::Array3(const Array3<T>& a)
-{    
+{
   s = a.s;
-  
+
   if (s(0)>0 && s(1)>0 && s(2)>0)
   {
     d = new T[s(0)*s(1)*s(2)];
-  
+
     for(int i=0;i<s(0)*s(1)*s(2);i++) d[i] = a.d[i];
   }
   else
@@ -1672,7 +1672,7 @@ Array3<T>& Array3<T>::operator=(const Array3<T>& a)
     {
       delete[] d;
       s = a.s;
-  
+
       if (a.s(0)>0 && a.s(1)>0 && a.s(2)>0)
       {
         d = new T[s(0)*s(1)*s(2)];
@@ -1684,17 +1684,17 @@ Array3<T>& Array3<T>::operator=(const Array3<T>& a)
       }
     }
   }
-  
+
   return *this;
 }
 
-template<typename T>      
+template<typename T>
 Array3<T>::~Array3()
 {
   delete[] d;
 }
 
-template<typename T>  
+template<typename T>
 inline T& Array3<T>::operator[](int i)
 {
   assert(i>=0 && i<numel());
@@ -1717,7 +1717,7 @@ inline T& Array3<T>::operator()(int i,int j,int k)
   assert(i>=0 && i<s(0) &&
          j>=0 && j<s(1) &&
          k>=0 && k<s(2));
-  
+
   return d[i+(j+k*s(1))*s(0)];
 }
 
@@ -1728,7 +1728,7 @@ inline const T& Array3<T>::operator()(int i,int j,int k) const
   assert(i>=0 && i<s(0) &&
          j>=0 && j<s(1) &&
          k>=0 && k<s(2));
-  
+
   return d[i+(j+k*s(1))*s(0)];
 }
 
@@ -1739,7 +1739,7 @@ inline T& Array3<T>::operator()(const Vec<3,int>& ijk)
   assert(ijk(0)>=0 && ijk(0)<s(0) &&
          ijk(1)>=0 && ijk(1)<s(1) &&
          ijk(2)>=0 && ijk(2)<s(2));
-  
+
   return d[ijk(0)+(ijk(1)+ijk(2)*s(1))*s(0)];
 }
 
@@ -1750,11 +1750,11 @@ inline const T& Array3<T>::operator()(const Vec<3,int>& ijk) const
   assert(ijk(0)>=0 && ijk(0)<s(0) &&
          ijk(1)>=0 && ijk(1)<s(1) &&
          ijk(2)>=0 && ijk(2)<s(2));
-  
+
   return d[ijk(0)+(ijk(1)+ijk(2)*s(1))*s(0)];
 }
- 
-template<typename T> 
+
+template<typename T>
 Vec3i Array3<T>::size() const
 {
   return s;
@@ -1788,7 +1788,7 @@ int Array3<T>::depth() const
 template<typename T>
 int Array3<T>::numel() const
 {
-  return size(0)*size(1)*size(2);  
+  return size(0)*size(1)*size(2);
 }
 
 template<typename T>
@@ -1814,7 +1814,7 @@ void Array3<T>::clear()
 {
   delete[] d;
   s = Vec3i(0,0,0);
-  d = 0;    
+  d = 0;
 }
 
 template<typename T>
@@ -1822,13 +1822,13 @@ void Array3<T>::swap(Array3<T>& b)
 {
   Vec3i tmp_s = s;
   s = b.s;
-  b.s = tmp_s;        
-  
+  b.s = tmp_s;
+
   T* tmp_d = d;
   d = b.d;
   b.d = tmp_d;
 }
-  
+
 template<typename T>
 Vec3i size(const Array3<T>& a)
 {
@@ -1844,13 +1844,13 @@ int size(const Array3<T>& a,int dim)
 template<typename T>
 int numel(const Array3<T>& a)
 {
-  return a.numel();  
+  return a.numel();
 }
 
 template<typename T>
 bool empty(const Array3<T>& a)
 {
-  return a.empty();  
+  return a.empty();
 }
 
 template<typename T>
@@ -1862,13 +1862,13 @@ void clear(Array3<T>* a)
 template<typename T>
 void swap(Array3<T>& a,Array3<T>& b)
 {
-  a.swap(b);    
+  a.swap(b);
 }
 
 template<typename T>
 Array3<T> a3read(const std::string& fileName)
 {
-  Array3<T> A; 
+  Array3<T> A;
   if(!a3read(&A,fileName)) { return Array3<T>(); }
   return A;
 }
@@ -1877,11 +1877,11 @@ template<typename T>
 bool a3read(Array3<T>* out_A,const std::string& fileName)
 {
   FILE* f = fopen(fileName.c_str(),"rb");
-  
+
   if(!f) { return false; }
 
-  int w,h,d,s;  
-  
+  int w,h,d,s;
+
   if(fread(&w,sizeof(w),1,f)!=1 ||
      fread(&h,sizeof(h),1,f)!=1 ||
      fread(&d,sizeof(d),1,f)!=1 ||
@@ -1891,7 +1891,7 @@ bool a3read(Array3<T>* out_A,const std::string& fileName)
     fclose(f);
     return false;
   }
-  
+
   Array3<T> A(w,h,d);
 
   if(fread(A.data(),sizeof(T)*w*h*d,1,f)!=1)
@@ -1901,7 +1901,7 @@ bool a3read(Array3<T>* out_A,const std::string& fileName)
   }
 
   if(out_A!=0) { *out_A = A; }
-    
+
   fclose(f);
   return true;
 }
@@ -1912,14 +1912,14 @@ bool a3write(const Array3<T>& A,const std::string& fileName)
   if(A.numel()==0) { return false; }
 
   FILE* f = fopen(fileName.c_str(),"wb");
-  
+
   if(!f) { return false; }
 
   const int w = A.width();
   const int h = A.height();
   const int d = A.depth();
   const int s = sizeof(T);
-  
+
   if(fwrite(&w,sizeof(w),1,f)!=1 ||
      fwrite(&h,sizeof(h),1,f)!=1 ||
      fwrite(&d,sizeof(d),1,f)!=1 ||
@@ -1929,7 +1929,7 @@ bool a3write(const Array3<T>& A,const std::string& fileName)
     fclose(f);
     return false;
   }
-  
+
   fclose(f);
   return true;
 }

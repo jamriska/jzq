@@ -17,7 +17,7 @@ public:
   GLTextureBase(const GLTextureBase& t) = delete;
   GLTexture& operator=(const GLTextureBase& t) = delete;
 
-  GLTexture& bind();
+  GLTexture& bind(GLint unit=0);
   GLTexture& setParameter(GLenum name,GLint param);
   GLTexture& setParameter(GLenum name,GLfloat param);
   GLTexture& setMinFilter(GLint param);
@@ -28,7 +28,7 @@ public:
   GLTexture& setMaxLevel(GLint param);
   GLTexture& setLodBias(GLfloat param);
   GLTexture& generateMipmap();
-  GLuint id(); 
+  GLuint id();
   GLint internalFormat(GLint level=0);
 
 protected:
@@ -38,7 +38,7 @@ protected:
 
   GLint   getTexLevelParameteri(GLint level,GLenum pname);
   GLfloat getTexLevelParameterf(GLint level,GLenum pname);
- 
+
   static GLenum formatFor(GLint internalFormat);
   static GLenum typeFor(GLint internalFormat);
 
@@ -56,15 +56,15 @@ public:
 
   GLTexture1D(const GLTexture1D& t) = delete;
   GLTexture1D& operator=(const GLTexture1D& t) = delete;
-  
+
   GLTexture1D(GLint internalFormat,int width,void* data=0);
   GLTexture1D(GLint internalFormat,int width,GLenum format,void* data);
   GLTexture1D(GLint internalFormat,int width,GLenum format,GLenum type,void* data);
-  
+
   template<typename T> explicit GLTexture1D(const std::vector<T>& image);
   template<typename T> GLTexture1D(GLint internalFormat,const std::vector<T>& image);
   template<typename T> GLTexture1D(GLint internalFormat,GLenum format,const std::vector<T>& image);
-  
+
   GLTexture1D& setWrap(GLint wrapS);
 
   GLint width(GLint level=0);
@@ -86,11 +86,11 @@ public:
   GLTexture2D(GLint internalFormat,int width,int height,void* data=0);
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data);
   GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
-  
+
   template<typename T> explicit GLTexture2D(const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,GLenum format,const Array2<T>& image);
-  
+
   GLTexture2D& setWrap(GLint wrapST);
   GLTexture2D& setWrap(GLint wrapS,GLint wrapT);
 
@@ -110,7 +110,7 @@ public:
 
   GLTexture3D(const GLTexture3D& t) = delete;
   GLTexture3D& operator=(const GLTexture3D& t) = delete;
-  
+
   GLTexture3D(GLint internalFormat,int width,int height,int depth,void* data=0);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,void* data);
   GLTexture3D(GLint internalFormat,int width,int height,int depth,GLenum format,GLenum type,void* data);
@@ -118,7 +118,7 @@ public:
   template<typename T> explicit GLTexture3D(const Array3<T>& image);
   template<typename T> GLTexture3D(GLint internalFormat,const Array3<T>& image);
   template<typename T> GLTexture3D(GLint internalFormat,GLenum format,const Array3<T>& image);
-  
+
   GLTexture3D& setWrap(GLint wrapSTR);
   GLTexture3D& setWrap(GLint wrapS,GLint wrapT,GLint wrapR);
 
@@ -147,14 +147,39 @@ public:
   GLShader& use();
   GLint linkStatus();
   std::string infoLog();
-  
+
+  GLShader& setUniform(const std::string& name,GLint value);
+  GLShader& setUniform(const std::string& name,GLfloat value);
+
+  GLShader& bindTexture(const std::string& samplerName,GLTexture1D& texture);
+  GLShader& bindTexture(const std::string& samplerName,GLTexture2D& texture);
+  GLShader& bindTexture(const std::string& samplerName,GLTexture3D& texture);
+
 private:
   GLuint _id;
   GLint _linkStatus;
   std::string _infoLog;
-
   GLuint compileShader(GLenum type,const std::string& source);
+
+  struct Sampler
+  {
+    std::string name;
+    GLenum type;
+    GLint unit;
+
+    Sampler() {}
+    Sampler(const std::string& name,GLenum type,GLint unit) : name(name), type(type), unit(unit) {}
+  };
+
+  std::vector<Sampler> _samplers;
+  int samplerIndexForName(const std::string& name);
+
+  template<typename GLTexture,GLenum SAMPLER_TYPE>
+  GLShader& _bindTexture(const std::string& samplerName,GLTexture& texture);
 };
+
+GLShader GLShaderFromFile(const std::string& vertexShaderFileName,
+                          const std::string& fragmentShaderFileName);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +207,7 @@ GLTexture& GLTextureBase<TARGET,GLTexture>::operator=(GLTextureBase<TARGET,GLTex
 
 template<GLenum TARGET,typename GLTexture>
 GLTextureBase<TARGET,GLTexture>::~GLTextureBase()
-{  
+{
   if (_id!=0) { glDeleteTextures(1,&_id); }
 }
 
@@ -200,9 +225,10 @@ GLuint GLTextureBase<TARGET,GLTexture>::id()
 }
 
 template<GLenum TARGET,typename GLTexture>
-GLTexture& GLTextureBase<TARGET,GLTexture>::bind()
+GLTexture& GLTextureBase<TARGET,GLTexture>::bind(GLint unit)
 {
   if (_id==0) { init(); }
+  glActiveTexture(GL_TEXTURE0 + unit);
   glBindTexture(TARGET,_id);
   return static_cast<GLTexture&>(*this);
 }
@@ -291,7 +317,7 @@ GLenum GLTextureBase<TARGET,GLTexture>::formatFor(GLint internalFormat)
     case GL_RG16UI:             return GL_RG;
     case GL_RGB16UI:            return GL_RGB;
     case GL_RGBA16UI:           return GL_RGBA;
-    
+
     case GL_R32I:               return GL_RED;
     case GL_RG32I:              return GL_RG;
     case GL_RGB32I:             return GL_RGB;
@@ -328,7 +354,7 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
     case GL_RG8:                return GL_UNSIGNED_BYTE;
     case GL_RGB8:               return GL_UNSIGNED_BYTE;
     case GL_RGBA8:              return GL_UNSIGNED_BYTE;
-    
+
     case GL_R8I:                return GL_BYTE;
     case GL_RG8I:               return GL_BYTE;
     case GL_RGB8I:              return GL_BYTE;
@@ -358,7 +384,7 @@ GLenum GLTextureBase<TARGET,GLTexture>::typeFor(GLint internalFormat)
     case GL_RG32UI:             return GL_UNSIGNED_INT;
     case GL_RGB32UI:            return GL_UNSIGNED_INT;
     case GL_RGBA32UI:           return GL_UNSIGNED_INT;
-    
+
     case GL_R32F:               return GL_FLOAT;
     case GL_RG32F:              return GL_FLOAT;
     case GL_RGB32F:             return GL_FLOAT;
@@ -409,7 +435,7 @@ void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format
   glPixelStorei(GL_UNPACK_SKIP_PIXELS,0);
   glPixelStorei(GL_UNPACK_SKIP_IMAGES,0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-  glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,data);  
+  glTexImage2D(GL_TEXTURE_2D,0,internalFormat,width,height,0,format,type,data);
   setWrap(GL_CLAMP_TO_EDGE);
   setMinFilter(GL_NEAREST);
   setMagFilter(GL_NEAREST);
@@ -477,6 +503,7 @@ GLShader::GLShader(GLShader&& shader)
   _id = shader._id;
   _linkStatus = shader._linkStatus;
   _infoLog = std::move(shader._infoLog);
+  _samplers = std::move(shader._samplers);
   shader._id = 0;
   shader._linkStatus = GL_FALSE;
 }
@@ -488,6 +515,7 @@ GLShader& GLShader::operator=(GLShader&& shader)
   _id = shader._id;
   _linkStatus = shader._linkStatus;
   _infoLog = std::move(shader._infoLog);
+  _samplers = std::move(shader._samplers);
   shader._id = 0;
   shader._linkStatus = GL_FALSE;
   return *this;
@@ -525,7 +553,7 @@ GLShader::GLShader(const std::string& vertexShaderSource,
   glLinkProgram(program);
 
   glGetProgramiv(program,GL_LINK_STATUS,&_linkStatus);
-  
+
   GLint logLength = 0;
   glGetProgramiv(program,GL_INFO_LOG_LENGTH,&logLength);
 
@@ -541,6 +569,33 @@ GLShader::GLShader(const std::string& vertexShaderSource,
 
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+
+  {
+    GLint numUniforms = 0;
+    glGetProgramiv(program,GL_ACTIVE_UNIFORMS,&numUniforms);
+
+    GLint maxLength = 0;
+    glGetProgramiv(program,GL_ACTIVE_UNIFORM_MAX_LENGTH,&maxLength);
+
+    GLint unit = 0;
+    for(int index=0;index<numUniforms;index++)
+    {
+      std::string name(maxLength+1,0); // XXX
+      GLint arraySize = 0;
+      GLenum type = 0;
+      GLsizei actualLength = 0;
+      glGetActiveUniform(program,index,maxLength,&actualLength,&arraySize,&type,&name[0]);
+      name.resize(actualLength);
+      if (type==GL_SAMPLER_1D ||
+          type==GL_SAMPLER_2D ||
+          type==GL_SAMPLER_3D ||
+          type==GL_SAMPLER_CUBE)
+      {
+        _samplers.push_back(Sampler(name,type,unit));
+        unit++;
+      }
+    }
+  }
 
   _id = program;
 }
@@ -560,5 +615,51 @@ std::string GLShader::infoLog()
 {
   return _infoLog;
 }
+
+int GLShader::samplerIndexForName(const std::string& name)
+{
+  for(int i=0;i<_samplers.size();i++)
+  {
+    if (_samplers[i].name==name) { return i; }
+  }
+  return -1;
+}
+
+GLShader& GLShader::setUniform(const std::string& name,GLint value)
+{
+  use();
+  // XXX: check uniform exists & type matches
+  glUniform1i(glGetUniformLocation(_id,name.c_str()),value);
+  return *this;
+}
+
+GLShader& GLShader::setUniform(const std::string& name,GLfloat value)
+{
+  use();
+  // XXX: check uniform exists & type matches
+  glUniform1f(glGetUniformLocation(_id,name.c_str()),value);
+  return *this;
+}
+
+template<typename GLTexture,GLenum SAMPLER_TYPE>
+GLShader& GLShader::_bindTexture(const std::string& samplerName,GLTexture& texture)
+{
+  const int samplerIndex = samplerIndexForName(samplerName);
+
+  if (samplerIndex==-1) { printf("sampler %s does not exist!\n",samplerName.c_str()); return *this; }
+
+  const Sampler& sampler = _samplers[samplerIndex];
+
+  if (sampler.type!=SAMPLER_TYPE) { printf("wrong sampler type\n"); }
+
+  texture.bind(sampler.unit);
+  setUniform(samplerName,sampler.unit);
+
+  return *this;
+}
+
+GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture1D& texture) { return _bindTexture<GLTexture1D,GL_SAMPLER_1D>(samplerName,texture); }
+GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture2D& texture) { return _bindTexture<GLTexture2D,GL_SAMPLER_2D>(samplerName,texture); }
+GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture3D& texture) { return _bindTexture<GLTexture3D,GL_SAMPLER_3D>(samplerName,texture); }
 
 #endif

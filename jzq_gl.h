@@ -76,29 +76,29 @@ private:
 class GLTexture2D : public GLTextureBase<GL_TEXTURE_2D,GLTexture2D>
 {
 public:
-  GLTexture2D();
-  GLTexture2D(GLTexture2D&& t);
-  GLTexture2D& operator=(GLTexture2D&& t);
+  inline GLTexture2D();
+  inline GLTexture2D(GLTexture2D&& t);
+  inline GLTexture2D& operator=(GLTexture2D&& t);
 
-  GLTexture2D(const GLTexture2D& t) = delete;
-  GLTexture2D& operator=(const GLTexture2D& t) = delete;
+  inline GLTexture2D(const GLTexture2D& t) = delete;
+  inline GLTexture2D& operator=(const GLTexture2D& t) = delete;
 
-  GLTexture2D(GLint internalFormat,int width,int height,void* data=0);
-  GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data);
-  GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
+  inline GLTexture2D(GLint internalFormat,int width,int height,void* data=0);
+  inline GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data);
+  inline GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
 
   template<typename T> explicit GLTexture2D(const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,const Array2<T>& image);
   template<typename T> GLTexture2D(GLint internalFormat,GLenum format,const Array2<T>& image);
 
-  GLTexture2D& setWrap(GLint wrapST);
-  GLTexture2D& setWrap(GLint wrapS,GLint wrapT);
+  inline GLTexture2D& setWrap(GLint wrapST);
+  inline GLTexture2D& setWrap(GLint wrapS,GLint wrapT);
 
-  GLint width(GLint level=0);
-  GLint height(GLint level=0);
+  inline GLint width(GLint level=0);
+  inline GLint height(GLint level=0);
 
 private:
-  void init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
+  inline void init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data);
 };
 
 class GLTexture3D : public GLTextureBase<GL_TEXTURE_3D,GLTexture3D>
@@ -133,33 +133,33 @@ private:
 class GLShader
 {
 public:
-  GLShader();
-  GLShader(GLShader&& shader);
-  GLShader& operator=(GLShader&& shader);
-  ~GLShader();
+  inline GLShader();
+  inline GLShader(GLShader&& shader);
+  inline GLShader& operator=(GLShader&& shader);
+  inline ~GLShader();
 
-  GLShader(const GLShader& shader) = delete;
-  GLShader& operator=(const GLShader& shader) = delete;
+  inline GLShader(const GLShader& shader) = delete;
+  inline GLShader& operator=(const GLShader& shader) = delete;
 
-  GLShader(const std::string& vertexShaderSource,
-           const std::string& fragmentShaderSource);
+  inline GLShader(const std::string& vertexShaderSource,
+                  const std::string& fragmentShaderSource);
 
-  GLShader& use();
-  GLint linkStatus();
-  std::string infoLog();
+  inline GLShader& use();
+  inline GLint linkStatus();
+  inline std::string infoLog();
 
-  GLShader& setUniform(const std::string& name,GLint value);
-  GLShader& setUniform(const std::string& name,GLfloat value);
+  inline GLShader& setUniform(const std::string& name,GLint value);
+  inline GLShader& setUniform(const std::string& name,GLfloat value);
 
-  GLShader& bindTexture(const std::string& samplerName,GLTexture1D& texture);
-  GLShader& bindTexture(const std::string& samplerName,GLTexture2D& texture);
-  GLShader& bindTexture(const std::string& samplerName,GLTexture3D& texture);
+  inline GLShader& bindTexture(const std::string& samplerName,GLTexture1D& texture);
+  inline GLShader& bindTexture(const std::string& samplerName,GLTexture2D& texture);
+  inline GLShader& bindTexture(const std::string& samplerName,GLTexture3D& texture);
 
 private:
   GLuint _id;
   GLint _linkStatus;
   std::string _infoLog;
-  GLuint compileShader(GLenum type,const std::string& source);
+  inline GLuint compileShader(GLenum type,const std::string& source);
 
   struct Sampler
   {
@@ -172,14 +172,14 @@ private:
   };
 
   std::vector<Sampler> _samplers;
-  int samplerIndexForName(const std::string& name);
+  inline int samplerIndexForName(const std::string& name);
 
   template<typename GLTexture,GLenum SAMPLER_TYPE>
   GLShader& _bindTexture(const std::string& samplerName,GLTexture& texture);
 };
 
-GLShader GLShaderFromFile(const std::string& vertexShaderFileName,
-                          const std::string& fragmentShaderFileName);
+inline GLShader GLShaderFromFile(const std::string& vertexShaderFileName,
+                                 const std::string& fragmentShaderFileName);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,11 +420,11 @@ template<> struct GLInternalFormatFor<Vec2f>         { static const GLint value 
 template<> struct GLInternalFormatFor<Vec3f>         { static const GLint value = GL_RGB32F;  };
 template<> struct GLInternalFormatFor<Vec4f>         { static const GLint value = GL_RGBA32F; };
 
-GLTexture2D::GLTexture2D() {}
-GLTexture2D::GLTexture2D(GLTexture2D&& t) : GLTextureBase(std::move(t)) {}
-GLTexture2D& GLTexture2D::operator=(GLTexture2D&& t) { return GLTextureBase::operator=(std::move(t)); }
+inline GLTexture2D::GLTexture2D() {}
+inline GLTexture2D::GLTexture2D(GLTexture2D&& t) : GLTextureBase(std::move(t)) {}
+inline GLTexture2D& GLTexture2D::operator=(GLTexture2D&& t) { return GLTextureBase::operator=(std::move(t)); }
 
-void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
+inline void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
 {
   bind();
   glPixelStorei(GL_UNPACK_SWAP_BYTES,GL_FALSE);
@@ -441,17 +441,17 @@ void GLTexture2D::init2D(GLint internalFormat,int width,int height,GLenum format
   setMagFilter(GL_NEAREST);
 }
 
-GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,void* data)
+inline GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,void* data)
 {
   init2D(internalFormat,width,height,formatFor(internalFormat),typeFor(internalFormat),data);
 }
 
-GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data)
+inline GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,GLenum format,void* data)
 {
   init2D(internalFormat,width,height,format,typeFor(internalFormat),data);
 }
 
-GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
+inline GLTexture2D::GLTexture2D(GLint internalFormat,int width,int height,GLenum format,GLenum type,void* data)
 {
   init2D(internalFormat,width,height,format,type,data);
 }
@@ -474,31 +474,31 @@ GLTexture2D::GLTexture2D(GLint internalFormat,GLenum format,const Array2<T>& ima
   init2D(internalFormat,image.width(),image.height(),format,typeFor(GLInternalFormatFor<T>::value),(void*)image.data());
 }
 
-GLTexture2D& GLTexture2D::setWrap(GLint wrapS,GLint wrapT)
+inline GLTexture2D& GLTexture2D::setWrap(GLint wrapS,GLint wrapT)
 {
   setParameter(GL_TEXTURE_WRAP_S,wrapS);
   setParameter(GL_TEXTURE_WRAP_T,wrapT);
   return *this;
 }
 
-GLTexture2D& GLTexture2D::setWrap(GLint wrapST)
+inline GLTexture2D& GLTexture2D::setWrap(GLint wrapST)
 {
   return setWrap(wrapST,wrapST);
 }
 
-GLint GLTexture2D::width(GLint level)
+inline GLint GLTexture2D::width(GLint level)
 {
   return getTexLevelParameteri(level,GL_TEXTURE_WIDTH);
 }
 
-GLint GLTexture2D::height(GLint level)
+inline GLint GLTexture2D::height(GLint level)
 {
   return getTexLevelParameteri(level,GL_TEXTURE_HEIGHT);
 }
 
-GLShader::GLShader() : _id(0),_linkStatus(GL_FALSE),_infoLog("") {}
+inline GLShader::GLShader() : _id(0),_linkStatus(GL_FALSE),_infoLog("") {}
 
-GLShader::GLShader(GLShader&& shader)
+inline GLShader::GLShader(GLShader&& shader)
 {
   _id = shader._id;
   _linkStatus = shader._linkStatus;
@@ -508,7 +508,7 @@ GLShader::GLShader(GLShader&& shader)
   shader._linkStatus = GL_FALSE;
 }
 
-GLShader& GLShader::operator=(GLShader&& shader)
+inline GLShader& GLShader::operator=(GLShader&& shader)
 {
   if (_id!=0) { glDeleteProgram(_id); }
   _id = 0;
@@ -521,12 +521,12 @@ GLShader& GLShader::operator=(GLShader&& shader)
   return *this;
 }
 
-GLShader::~GLShader()
+inline GLShader::~GLShader()
 {
   if (_id!=0) { glDeleteProgram(_id); }
 }
 
-GLuint GLShader::compileShader(GLenum type,const std::string& source)
+inline GLuint GLShader::compileShader(GLenum type,const std::string& source)
 {
   const GLuint shader = glCreateShader(type);
 
@@ -538,8 +538,8 @@ GLuint GLShader::compileShader(GLenum type,const std::string& source)
   return shader;
 }
 
-GLShader::GLShader(const std::string& vertexShaderSource,
-                   const std::string& fragmentShaderSource)
+inline GLShader::GLShader(const std::string& vertexShaderSource,
+                          const std::string& fragmentShaderSource)
 : _id(0),_linkStatus(GL_FALSE),_infoLog("")
 {
   const GLuint vertexShader = compileShader(GL_VERTEX_SHADER,vertexShaderSource);
@@ -600,23 +600,23 @@ GLShader::GLShader(const std::string& vertexShaderSource,
   _id = program;
 }
 
-GLShader& GLShader::use()
+inline GLShader& GLShader::use()
 {
   glUseProgram(_id);
   return *this;
 }
 
-GLint GLShader::linkStatus()
+inline GLint GLShader::linkStatus()
 {
   return _linkStatus;
 }
 
-std::string GLShader::infoLog()
+inline std::string GLShader::infoLog()
 {
   return _infoLog;
 }
 
-int GLShader::samplerIndexForName(const std::string& name)
+inline int GLShader::samplerIndexForName(const std::string& name)
 {
   for(int i=0;i<_samplers.size();i++)
   {
@@ -625,7 +625,7 @@ int GLShader::samplerIndexForName(const std::string& name)
   return -1;
 }
 
-GLShader& GLShader::setUniform(const std::string& name,GLint value)
+inline GLShader& GLShader::setUniform(const std::string& name,GLint value)
 {
   use();
   // XXX: check uniform exists & type matches
@@ -633,7 +633,7 @@ GLShader& GLShader::setUniform(const std::string& name,GLint value)
   return *this;
 }
 
-GLShader& GLShader::setUniform(const std::string& name,GLfloat value)
+inline GLShader& GLShader::setUniform(const std::string& name,GLfloat value)
 {
   use();
   // XXX: check uniform exists & type matches
@@ -658,9 +658,9 @@ GLShader& GLShader::_bindTexture(const std::string& samplerName,GLTexture& textu
   return *this;
 }
 
-GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture1D& texture) { return _bindTexture<GLTexture1D,GL_SAMPLER_1D>(samplerName,texture); }
-GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture2D& texture) { return _bindTexture<GLTexture2D,GL_SAMPLER_2D>(samplerName,texture); }
-GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture3D& texture) { return _bindTexture<GLTexture3D,GL_SAMPLER_3D>(samplerName,texture); }
+inline GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture1D& texture) { return _bindTexture<GLTexture1D,GL_SAMPLER_1D>(samplerName,texture); }
+inline GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture2D& texture) { return _bindTexture<GLTexture2D,GL_SAMPLER_2D>(samplerName,texture); }
+inline GLShader& GLShader::bindTexture(const std::string& samplerName,GLTexture3D& texture) { return _bindTexture<GLTexture3D,GL_SAMPLER_3D>(samplerName,texture); }
 
 namespace jzq_detail
 {
@@ -678,8 +678,8 @@ namespace jzq_detail
   }
 }
 
-GLShader GLShaderFromFile(const std::string& vertexShaderFileName,
-                          const std::string& fragmentShaderFileName)
+inline GLShader GLShaderFromFile(const std::string& vertexShaderFileName,
+                                 const std::string& fragmentShaderFileName)
 {
   return GLShader(jzq_detail::stringFromFile(vertexShaderFileName),
                   jzq_detail::stringFromFile(fragmentShaderFileName));
